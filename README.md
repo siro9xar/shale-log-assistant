@@ -31,12 +31,14 @@ shale_log_assistant/
 │   ├── plotting.py              log plot
 │   ├── tools.py                 functions the LLM can call (compute_sw, compute_toc ...)
 │   ├── llm.py                   Anthropic API: report writer and chat loop
-│   └── verify.py                number check, 0-1 range check, low-confidence check
+│   ├── verify.py                number check, 0-1 range check, low-confidence check
+│   └── suggest.py               Rw from Rwa, Passey baseline candidates, matrix density (suggestions only)
 ├── scripts/
 │   ├── download_example_data.py
 │   ├── prepare_force_training.py
 │   ├── train_facies.py
 │   ├── run_pipeline.py
+│   ├── suggest_parameters.py
 │   ├── generate_report.py
 │   ├── chat.py
 │   └── verify_report.py
@@ -57,6 +59,7 @@ python scripts/download_example_data.py          # LAS (2.7 MB) + FORCE 2020 wel
 python scripts/prepare_force_training.py         # builds data/force/training_table.csv
 python scripts/train_facies.py --compare-random-split     # about 2 minutes on 2 cores
 python scripts/run_pipeline.py                   # QC report first, then all calculations
+python scripts/suggest_parameters.py             # suggests Rw, Passey baseline, matrix density (prints only)
 
 export ANTHROPIC_API_KEY=sk-ant-...              # PowerShell: $env:ANTHROPIC_API_KEY="sk-ant-..."
 python scripts/generate_report.py                # LLM report + automatic verification
