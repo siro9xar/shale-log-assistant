@@ -145,7 +145,10 @@ class Chat:
                                 "content": json.dumps(result), "is_error": is_error})
             self.messages.append({"role": "user", "content": results})
         answer = _text(response)
-        sources = [self.session.summary, self.session.calls, self.user_texts]
+        # A failed tool call only echoes what the LLM sent (e.g. "rw must be positive, got 0.731"):
+        # that is not a Python result, so it cannot verify a number.
+        ok_calls = [c for c in self.session.calls if not c["is_error"]]
+        sources = [self.session.summary, ok_calls, self.user_texts]
         check = check_numbers(answer, sources, strip_list(self.session.summary))
         return answer, check
 

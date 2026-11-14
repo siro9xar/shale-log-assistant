@@ -27,6 +27,8 @@ _FRACTION = {"V/V", "DEC", "DECIMAL", "FRAC", "FRACTION", "M3/M3", "CFCF", "FT3/
 _US_FT = {"US/F", "US/FT", "USEC/FT", "USEC/F", "US/FOOT", "µS/FT", "ΜS/FT", "MICROSEC/FT"}
 _US_M = {"US/M", "USEC/M", "µS/M", "ΜS/M", "MICROSEC/M"}
 _INCH = {"IN", "INCH", "INCHES", "INS", '"'}
+_API = {"GAPI", "API", "APIU", "API_UNITS", "GAMMA_API"}
+_OHMM = {"OHMM", "OHM.M", "OHM-M", "OHM*M", "OHMS", "OHM", "OHM/M", "OHMM2/M", "OHM.M2/M", "OHM-M2/M", "OHMSM"}
 _MM = {"MM"}
 _CM = {"CM"}
 
@@ -98,6 +100,14 @@ def convert_to_standard(std: str, values, unit: str | None):
             return v / MM_PER_INCH, "mm -> in (divided by 25.4)", (
                 f"{std} unit '{unit}' not recognised; median {med:.0f} looks like mm, converted")
         return v, "none", f"{std} unit '{unit}' not recognised; assumed inches"
+
+    # No conversion exists for these; a wrong unit must at least be visible in the QC report.
+    if std in ("GR", "CGR") and u and u not in _API:
+        return v, "none", (f"{std} unit '{unit}' is not API. Vsh uses relative gamma ray and still works, but the "
+                           "facies classifier expects API: its result is not reliable for this well")
+    if std == "RT" and u and u not in _OHMM:
+        return v, "none", (f"RT unit '{unit}' is not ohm.m; no conversion applied. If this is a conductivity "
+                           "curve, Sw and TOC are wrong: map a resistivity curve instead")
 
     return v, "none", None
 

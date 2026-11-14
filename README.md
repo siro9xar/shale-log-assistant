@@ -47,7 +47,7 @@ shale_log_assistant/
 │   ├── verify_report.py
 │   ├── csv_to_las.py
 │   └── export_report.py
-├── tests/                       66 tests, formulas checked against hand calculations
+├── tests/                       80 tests, formulas checked against hand calculations
 ├── models/                      facies metrics + confusion matrix from the example training run
 └── outputs/example/             example run on Volve well 15/9-19 SR
 ```
@@ -58,7 +58,7 @@ Python 3.10 or newer.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests -q                        # 66 tests should pass
+python -m pytest tests -q                        # 80 tests should pass
 
 python scripts/download_example_data.py          # LAS (2.7 MB) + FORCE 2020 wells (92 MB)
 python scripts/prepare_force_training.py         # builds data/force/training_table.csv
@@ -137,8 +137,9 @@ B-2,2710.0,61.7,2.63,0.08,45.0,62.3,Carbonate
 | Density porosity | `PHID = (rho_ma - RHOB) / (rho_ma - rho_fl)` |
 | Kerogen volume | `Vker = k * (TOC/100) * RHOB / rho_ker` |
 | Total porosity | `PHIT = PHID - Vker * (rho_ma - rho_ker) / (rho_ma - rho_fl)` |
-| Effective porosity (density) | `PHIE = PHIT - Vsh * PHID_sh`, `PHID_sh = (rho_ma - rho_sh) / (rho_ma - rho_fl)` |
-| Effective porosity (density-neutron) | `PHIE = (PHID_c + PHIN_c) / 2`, with `PHIN_c = NPHI - Vker*HI_ker - Vsh*NPHI_sh` (gas: root-mean-square) |
+| Effective porosity (density) | `PHIE = PHID_k - Vsh * PHID_sh`, with `PHID_k` = the kerogen-corrected density porosity above (PHIT before clipping) and `PHID_sh = (rho_ma - rho_sh) / (rho_ma - rho_fl)`; clipped to 0-phi_max and never above PHIT |
+| Effective porosity (density-neutron) | `PHIE = (PHID_c + PHIN_c) / 2`, with `PHID_c = PHID_k - Vsh*PHID_sh` and `PHIN_c = (NPHI + offset) - Vker*HI_ker - Vsh*(NPHI_sh + offset)`, offset = `nphi_matrix_offset` (gas: root-mean-square) |
+| Apparent water resistivity | `Rwa = RT * PHIT^m / a` |
 | Sw Archie | `Sw = ((a*Rw) / (PHI^m * RT))^(1/n)` |
 | Sw Simandoux | `1/RT = PHI^m * Sw^n / (a*Rw) + Vsh * Sw / Rsh`, solved for Sw |
 
@@ -193,6 +194,7 @@ The release publishes the logs as CSV; `scripts/csv_to_las.py` converts them to 
 (round-trip checked). Run with `config_shale.yaml`, where every changed assumption is marked `[GC-1 CHANGED]`:
 
 ```bash
+python scripts/download_example_data.py --only gc1     # needs access to www.sciencebase.gov
 python scripts/csv_to_las.py --csv data/usgs_gc1_west_woodway/wireline_geophysical_welllogs.csv \
     --dictionary data/usgs_gc1_west_woodway/wireline_geophysical_welllogs_datadictionary.csv \
     --out data/usgs_gc1_west_woodway/GC-1_West_Woodway.las --well "USGS GC-1 West Woodway"

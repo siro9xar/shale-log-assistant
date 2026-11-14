@@ -16,11 +16,13 @@ import re
 
 NUMBER = re.compile(
     r"(?<![A-Za-z0-9_.])"                       # not glued to a word, e.g. Z3, log10, P95
-    r"(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?)"
+    r"(\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)?|\.\d+)"   # 1,226 | 0.35 | .35
     r"(?:[eE]([-+]?\d+))?"
     r"(\s?%)?")
 LIST_MARKER = re.compile(r"^(\s*(?:>\s*)?)\d+[.)]\s+", re.M)          # "1. item"
-HEADING_NUMBER = re.compile(r"^(\s*#{1,6}\s*)\d+(?:\.\d+)*[.)]?\s+", re.M)  # "## 2. Title"
+# "## 2. Title" / "## 2.1) Title": only a number that ends in . or ) is section numbering.
+# "## 350 mD in Z9" is a number in a heading and is checked like any other.
+HEADING_NUMBER = re.compile(r"^(\s*#{1,6}\s*)\d+(?:\.\d+)*[.)]\s+", re.M)
 SIGN_CHARS = "-−"
 RANGE_KEYS_01 = ("vsh_", "sw_")
 
@@ -190,15 +192,19 @@ def verify_report(report: str, summary: dict, curves=None, allow_rounding: bool 
     numbers = check_numbers(report, [summary], strip_list(summary), allow_rounding)
     ranges = check_ranges(summary, curves)
     flags = check_low_confidence_flagged(report, summary)
-    return {"passed": numbers["passed"] and ranges["passed"] and flags["passed"],
+    empty = not report.strip()                      # an empty answer must not count as a verified report
+    return {"passed": numbers["passed"] and ranges["passed"] and flags["passed"] and not empty,
+            "empty_report": empty,
             "strict_matching": not allow_rounding,
             "numbers": numbers, "ranges": ranges, "low_confidence_flags": flags}
 
 
 def format_verification(v: dict) -> str:
     n, r, f = v["numbers"], v["ranges"], v["low_confidence_flags"]
-    L = ["=" * 78, f"VERIFICATION: {'PASSED' if v['passed'] else 'FAILED'}", "=" * 78,
-         f"[{'ok' if n['passed'] else 'FAIL'}] numbers in the report found in the JSON: "
+    L = ["=" * 78, f"VERIFICATION: {'PASSED' if v['passed'] else 'FAILED'}", "=" * 78]
+    if v.get("empty_report"):
+        L.append("[FAIL] the report is empty")
+    L += [f"[{'ok' if n['passed'] else 'FAIL'}] numbers in the report found in the JSON: "
          f"{n['numbers_verified']} of {n['numbers_found']}"]
     for u in n["unverified"]:
         L.append(f"       {u['number']:>10}  {u['reason']}   ...{u['context']}...")

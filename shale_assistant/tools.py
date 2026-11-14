@@ -5,6 +5,7 @@ what-if case and the difference - so the LLM never has to subtract, average or c
 from __future__ import annotations
 
 import copy
+import math
 import json
 from pathlib import Path
 
@@ -131,8 +132,15 @@ class Session:
 
     @staticmethod
     def _positive(name: str, value) -> float:
-        if isinstance(value, bool) or not isinstance(value, (int, float)) or not value > 0:
-            raise ToolError(f"{name} must be a positive number, got {value!r}")
+        if (isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value)
+                or not value > 0):
+            raise ToolError(f"{name} must be a positive, finite number, got {value!r}")
+        return float(value)
+
+    @staticmethod
+    def _number(name: str, value) -> float:
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+            raise ToolError(f"{name} must be a finite number, got {value!r}")
         return float(value)
 
     def _what_if(self, zone, changes: dict, keys: list[str]) -> dict:
@@ -201,9 +209,9 @@ class Session:
     def compute_vsh(self, zone, gr_clean=None, gr_shale=None, method=None) -> dict:
         changes = {}
         if gr_clean is not None:
-            changes["vsh.gr_clean"] = float(gr_clean)
+            changes["vsh.gr_clean"] = self._number("gr_clean", gr_clean)
         if gr_shale is not None:
-            changes["vsh.gr_shale"] = float(gr_shale)
+            changes["vsh.gr_shale"] = self._number("gr_shale", gr_shale)
         if method is not None:
             if method == "linear":
                 changes["vsh.use_for_downstream"] = "linear"
@@ -221,7 +229,7 @@ class Session:
             if value is not None:
                 changes[f"porosity.{key}"] = self._positive(key, value)
         if nphi_shale is not None:
-            changes["porosity.nphi_shale"] = float(nphi_shale)
+            changes["porosity.nphi_shale"] = self._number("nphi_shale", nphi_shale)
         if apply_kerogen_correction is not None:
             changes["porosity.kerogen.apply"] = bool(apply_kerogen_correction)
         return self._what_if(zone, changes, POR_KEYS + SW_KEYS)
@@ -230,7 +238,7 @@ class Session:
                     nphi_baseline=None, method=None) -> dict:
         changes = {}
         if lom is not None:
-            if not 0 < float(lom) < 20:
+            if not 0 < self._number("lom", lom) < 20:
                 raise ToolError("lom must be between 0 and 20")
             changes["toc.lom"] = float(lom)
         for key, value in (("rt_baseline", rt_baseline), ("dt_baseline", dt_baseline),
@@ -238,7 +246,7 @@ class Session:
             if value is not None:
                 changes[f"toc.{key}"] = self._positive(key, value)
         if nphi_baseline is not None:
-            changes["toc.nphi_baseline"] = float(nphi_baseline)
+            changes["toc.nphi_baseline"] = self._number("nphi_baseline", nphi_baseline)
         if method is not None:
             if method not in ("sonic", "density", "neutron"):
                 raise ToolError("method must be sonic, density or neutron")

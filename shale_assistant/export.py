@@ -21,7 +21,7 @@ from .verify import format_verification, verify_report
 ZONE_COLUMNS = [  # (header, getter, decimals)
     ("Zone", lambda z: z["name"] + (" *" if z["low_confidence"] else ""), None),
     ("Top", lambda z: z["top"], 1), ("Base", lambda z: z["base"], 1), ("Thk", lambda z: z["thickness"], 1),
-    ("Vsh", lambda z: z["averages"]["vsh_larionov_mean"], 2),
+    ("Vsh", lambda z: z["averages"][z["_vsh_key"]], 2),
     ("PHIT", lambda z: z["averages"]["phit_mean"], 3), ("PHIE", lambda z: z["averages"]["phie_mean"], 3),
     ("Sw Archie", lambda z: z["averages"]["sw_archie_mean"], 2),
     ("Sw Simandoux", lambda z: z["averages"]["sw_simandoux_mean"], 2),
@@ -159,7 +159,9 @@ def _fmt(v, nd):
 
 
 def zone_rows(summary) -> list[list[str]]:
-    return [[_fmt(get(z), nd) for _, get, nd in ZONE_COLUMNS] for z in summary["zones"]]
+    vsh_key = ("vsh_linear_mean" if summary["parameters"].get("vsh_used_downstream") == "vsh_linear"
+               else "vsh_larionov_mean")          # the Vsh the porosity, Sw and TOC steps used
+    return [[_fmt(get({**z, "_vsh_key": vsh_key}), nd) for _, get, nd in ZONE_COLUMNS] for z in summary["zones"]]
 
 
 def _img(path: Path) -> str:

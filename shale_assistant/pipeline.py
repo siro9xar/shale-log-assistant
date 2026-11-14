@@ -103,11 +103,13 @@ def zone_table(summary: dict) -> str:
         return "  n/a" if x is None else f"{x:.{nd}f}"
     lines = ["ZONE SUMMARY (averages; * = low confidence)",
              f"{'zone':<6}{'top':>9}{'base':>9}{'thk':>7}{'Vsh':>6}{'PHIT':>6}{'PHIE':>6}{'SwA':>6}{'SwS':>6}{'TOC%':>6}  facies (conf)"]
+    vsh_key = ("vsh_linear_mean" if summary["parameters"].get("vsh_used_downstream") == "vsh_linear"
+               else "vsh_larionov_mean")          # the Vsh the porosity, Sw and TOC steps used
     for z in summary["zones"]:
         a, fa = z["averages"], z["facies"] or {}
         fac = f"{fa.get('dominant')} ({f(fa.get('mean_confidence'), 2).strip()})" if fa else "-"
         lines.append(f"{z['name'] + ('*' if z['low_confidence'] else ''):<6}{z['top']:>9.1f}{z['base']:>9.1f}"
-                     f"{z['thickness']:>7.1f}{f(a['vsh_larionov_mean'], 2):>6}{f(a['phit_mean'], 3):>6}"
+                     f"{z['thickness']:>7.1f}{f(a[vsh_key], 2):>6}{f(a['phit_mean'], 3):>6}"
                      f"{f(a['phie_mean'], 3):>6}{f(a['sw_archie_mean'], 2):>6}{f(a['sw_simandoux_mean'], 2):>6}"
                      f"{f(a['toc_mean_wtpct'], 2):>6}  {fac}")
     return "\n".join(lines)
