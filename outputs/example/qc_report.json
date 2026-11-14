@@ -1,0 +1,411 @@
+{
+  "well": "15/9-19 SR",
+  "file": "/home/user/shale-log-assistant/data/volve/15-9-19_SR_COMP.LAS",
+  "depth_unit": "M",
+  "header": {
+    "STRT": 102.1568,
+    "STOP": 4636.514,
+    "STEP": 0.1524,
+    "NULL": -999.25
+  },
+  "curves_found": {
+    "GR": {
+      "mnemonic": "GR",
+      "unit_in_file": "GAPI",
+      "standard_unit": "API",
+      "conversion": "none"
+    },
+    "CALI": {
+      "mnemonic": "CALI",
+      "unit_in_file": "IN",
+      "standard_unit": "in",
+      "conversion": "none"
+    },
+    "RHOB": {
+      "mnemonic": "DEN",
+      "unit_in_file": "G/CC",
+      "standard_unit": "g/cc",
+      "conversion": "none"
+    },
+    "NPHI": {
+      "mnemonic": "NEU",
+      "unit_in_file": "%",
+      "standard_unit": "v/v",
+      "conversion": "percent -> v/v (divided by 100)"
+    },
+    "RT": {
+      "mnemonic": "RDEP",
+      "unit_in_file": "OHMM",
+      "standard_unit": "ohm.m",
+      "conversion": "none"
+    },
+    "DT": {
+      "mnemonic": "AC",
+      "unit_in_file": "US/F",
+      "standard_unit": "us/ft",
+      "conversion": "none"
+    }
+  },
+  "curves_not_in_file": [
+    "CGR",
+    "BS",
+    "DRHO",
+    "PEF"
+  ],
+  "warnings": [],
+  "depth": {
+    "n_samples": 29754,
+    "top": 102.1568,
+    "base": 4636.514,
+    "median_step": 0.1524,
+    "n_reversals": 0,
+    "n_duplicate_depths": 0,
+    "n_irregular_steps": 0,
+    "n_gaps": 0,
+    "gaps": [],
+    "header_matches_data": true,
+    "issues": []
+  },
+  "coverage_whole_file": {
+    "GR": {
+      "first_valid_depth": 102.16,
+      "last_valid_depth": 4634.69,
+      "missing_fraction_of_file": 0.055
+    },
+    "RHOB": {
+      "first_valid_depth": 3550.21,
+      "last_valid_depth": 4629.66,
+      "missing_fraction_of_file": 0.762
+    },
+    "NPHI": {
+      "first_valid_depth": 3550.21,
+      "last_valid_depth": 4631.48,
+      "missing_fraction_of_file": 0.762
+    },
+    "RT": {
+      "first_valid_depth": 105.81,
+      "last_valid_depth": 4636.51,
+      "missing_fraction_of_file": 0.589
+    },
+    "DT": {
+      "first_valid_depth": 3550.21,
+      "last_valid_depth": 4617.92,
+      "missing_fraction_of_file": 0.765
+    },
+    "CALI": {
+      "first_valid_depth": 3550.21,
+      "last_valid_depth": 4617.92,
+      "missing_fraction_of_file": 0.765
+    }
+  },
+  "processing_interval": {
+    "top": 3550.21,
+    "base": 4629.66,
+    "n_samples": 7084,
+    "step": 0.1524,
+    "reason": "first to last depth where ['GR', 'RHOB', 'RT'] all have data"
+  },
+  "missing_data": {
+    "GR": {
+      "missing_samples": 0,
+      "missing_fraction": 0.0,
+      "n_gaps": 0,
+      "longest_gap": null
+    },
+    "RHOB": {
+      "missing_samples": 0,
+      "missing_fraction": 0.0,
+      "n_gaps": 0,
+      "longest_gap": null
+    },
+    "NPHI": {
+      "missing_samples": 0,
+      "missing_fraction": 0.0,
+      "n_gaps": 0,
+      "longest_gap": null
+    },
+    "RT": {
+      "missing_samples": 56,
+      "missing_fraction": 0.008,
+      "n_gaps": 1,
+      "longest_gap": [
+        3559.66,
+        3568.04
+      ]
+    },
+    "DT": {
+      "missing_samples": 77,
+      "missing_fraction": 0.011,
+      "n_gaps": 1,
+      "longest_gap": [
+        4618.07,
+        4629.66
+      ]
+    },
+    "CALI": {
+      "missing_samples": 77,
+      "missing_fraction": 0.011,
+      "n_gaps": 1,
+      "longest_gap": [
+        4618.07,
+        4629.66
+      ]
+    }
+  },
+  "out_of_range": {
+    "GR": {
+      "samples": 0,
+      "limits": [
+        0.0,
+        1000.0
+      ],
+      "intervals": []
+    },
+    "RHOB": {
+      "samples": 0,
+      "limits": [
+        1.2,
+        3.2
+      ],
+      "intervals": []
+    },
+    "NPHI": {
+      "samples": 4,
+      "limits": [
+        -0.15,
+        1.0
+      ],
+      "intervals": [
+        [
+          3553.1,
+          3553.1
+        ],
+        [
+          3609.03,
+          3609.03
+        ],
+        [
+          3620.16,
+          3620.16
+        ],
+        [
+          3621.68,
+          3621.68
+        ]
+      ]
+    },
+    "RT": {
+      "samples": 0,
+      "limits": [
+        0.01,
+        100000.0
+      ],
+      "intervals": []
+    },
+    "DT": {
+      "samples": 15,
+      "limits": [
+        40.0,
+        240.0
+      ],
+      "intervals": [
+        [
+          4491.12,
+          4491.58
+        ],
+        [
+          4492.19,
+          4492.95
+        ],
+        [
+          4494.48,
+          4494.78
+        ],
+        [
+          4593.54,
+          4593.69
+        ]
+      ]
+    },
+    "CALI": {
+      "samples": 0,
+      "limits": [
+        2.0,
+        40.0
+      ],
+      "intervals": []
+    }
+  },
+  "flatline": {
+    "GR": {
+      "samples": 0,
+      "intervals": []
+    },
+    "RHOB": {
+      "samples": 0,
+      "intervals": []
+    },
+    "NPHI": {
+      "samples": 0,
+      "intervals": []
+    },
+    "RT": {
+      "samples": 0,
+      "intervals": []
+    },
+    "DT": {
+      "samples": 85,
+      "intervals": [
+        [
+          4605.12,
+          4617.92
+        ]
+      ]
+    }
+  },
+  "washout": {
+    "assessed": true,
+    "bit_size_source": "config qc.bit_size_in = 8.5 in (ASSUMED, no bit-size curve)",
+    "threshold_in": 1.5,
+    "samples": 1226,
+    "fraction": 0.173,
+    "max_overgauge_in": 11.83,
+    "not_assessed_samples": 77,
+    "intervals_top_base_maxovergauge": [
+      [
+        3567.73,
+        3575.05,
+        5.1
+      ],
+      [
+        3579.77,
+        3585.26,
+        3.19
+      ],
+      [
+        3595.01,
+        3601.26,
+        11.83
+      ],
+      [
+        3603.09,
+        3616.81,
+        5.82
+      ],
+      [
+        3825.59,
+        3852.26,
+        2.5
+      ],
+      [
+        4053.58,
+        4059.07,
+        1.6
+      ],
+      [
+        4065.17,
+        4072.79,
+        1.6
+      ],
+      [
+        4340.86,
+        4383.38,
+        3.4
+      ]
+    ]
+  },
+  "undergauge_caliper": {
+    "threshold_in": 0.5,
+    "samples": 143,
+    "intervals": [
+      [
+        3654.75,
+        3654.91
+      ],
+      [
+        4596.59,
+        4617.92
+      ]
+    ],
+    "note": "caliper reads smaller than the bit: suspect caliper, hole condition unknown there"
+  },
+  "spikes": {
+    "GR": {
+      "samples": 17,
+      "first_depths": [
+        3603.85,
+        4132.53,
+        4132.68,
+        4150.51,
+        4163.46,
+        4163.62,
+        4187.24,
+        4187.39
+      ]
+    },
+    "RHOB": {
+      "samples": 11,
+      "first_depths": [
+        3567.58,
+        3601.57,
+        3804.11,
+        3804.26,
+        4389.93,
+        4390.08,
+        4424.07,
+        4424.22
+      ]
+    },
+    "NPHI": {
+      "samples": 32,
+      "first_depths": [
+        3561.33,
+        3561.64,
+        3615.74,
+        3659.02,
+        3661.76,
+        3668.93,
+        3669.08,
+        3691.48
+      ]
+    },
+    "RT": {
+      "samples": 0,
+      "first_depths": []
+    },
+    "DT": {
+      "samples": 20,
+      "first_depths": [
+        3572.15,
+        3761.43,
+        3761.59,
+        3806.24,
+        3821.33,
+        3845.25,
+        3845.41,
+        4390.08
+      ]
+    }
+  },
+  "spike_action": "set_nan",
+  "badhole_action": "null_density_neutron",
+  "samples_set_to_nan": {
+    "GR": {
+      "spike": 17
+    },
+    "RHOB": {
+      "spike": 11,
+      "badhole": 1226
+    },
+    "NPHI": {
+      "out_of_range": 4,
+      "spike": 32,
+      "badhole": 1219
+    },
+    "DT": {
+      "out_of_range": 15,
+      "flatline": 85,
+      "spike": 20
+    }
+  }
+}

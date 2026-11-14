@@ -1,5 +1,5 @@
 ==============================================================================
-QC REPORT  -  15/9-19 SR   (data/volve/15-9-19_SR_COMP.LAS)
+QC REPORT  -  15/9-19 SR   (/home/user/shale-log-assistant/data/volve/15-9-19_SR_COMP.LAS)
 ==============================================================================
 
 Curves found (file mnemonic [unit] -> standard name, conversion):
@@ -66,13 +66,12 @@ SPIKES (Hampel filter; action: set_nan):
   FLAG  GR        17 samples  first at [3603.85, 4132.53, 4132.68, 4150.51, 4163.46, 4163.62, 4187.24, 4187.39]
   FLAG  RHOB      11 samples  first at [3567.58, 3601.57, 3804.11, 3804.26, 4389.93, 4390.08, 4424.07, 4424.22]
   FLAG  NPHI      32 samples  first at [3561.33, 3561.64, 3615.74, 3659.02, 3661.76, 3668.93, 3669.08, 3691.48]
-  FLAG  RT         5 samples  first at [4132.22, 4187.24, 4187.39, 4323.79, 4395.57]
-  FLAG  DT        66 samples  first at [3572.15, 3603.85, 3615.59, 3661.15, 3666.79, 3700.78, 3706.57, 3709.77]
+  ok    RT         0 samples
+  FLAG  DT        20 samples  first at [3572.15, 3761.43, 3761.59, 3806.24, 3821.33, 3845.25, 3845.41, 4390.08]
 
 SAMPLES SET TO NaN BY QC (curve: reason = count):
   GR    spike = 17
   RHOB  spike = 11, badhole = 1226
   NPHI  out_of_range = 4, spike = 32, badhole = 1219
-  RT    spike = 5
-  DT    out_of_range = 15, flatline = 85, spike = 66
+  DT    out_of_range = 15, flatline = 85, spike = 20
 ==============================================================================
