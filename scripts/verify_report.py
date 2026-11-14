@@ -30,7 +30,11 @@ if __name__ == "__main__":
 
     out = Path(args.out)
     summary = json.loads(Path(args.json or out / "zone_summary.json").read_text(encoding="utf-8"))
-    report = Path(args.report or out / "report.md").read_text(encoding="utf-8")
+    report_path = Path(args.report or out / "report.md")
+    if not report_path.exists():
+        sys.exit(f"ERROR: {report_path} does not exist: there is no report to verify. "
+                 "Run scripts/generate_report.py first.")
+    report = report_path.read_text(encoding="utf-8")
     curves_path = Path(args.curves or out / "curves.csv")
     curves = pd.read_csv(curves_path) if curves_path.exists() else None
 

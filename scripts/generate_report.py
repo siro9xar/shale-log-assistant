@@ -24,7 +24,10 @@ if __name__ == "__main__":
     summary = json.loads((out / "zone_summary.json").read_text(encoding="utf-8"))
     curves = pd.read_csv(out / "curves.csv") if (out / "curves.csv").exists() else None
 
-    report, verification, calls = generate_report(summary, cfg, curves=curves)
+    try:
+        report, verification, calls = generate_report(summary, cfg, curves=curves)
+    except RuntimeError as err:                      # no API key
+        sys.exit(f"ERROR: {err}")
     (out / "report.md").write_text(report + "\n", encoding="utf-8")
     (out / "report_verification.json").write_text(json.dumps(verification, indent=2), encoding="utf-8")
     print(report)

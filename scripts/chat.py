@@ -42,7 +42,10 @@ if __name__ == "__main__":
         print(json.dumps(result, indent=2))
         raise SystemExit(0)
 
-    chat = Chat(session, load_config(args.config), on_tool=show_tool)
+    try:
+        chat = Chat(session, load_config(args.config), on_tool=show_tool)
+    except RuntimeError as err:                      # no API key
+        sys.exit(f"ERROR: {err}")
     print(f"Well {session.summary['well']['name']}: {len(session.summary['zones'])} zones loaded. Ask a question (exit to quit).")
     while True:
         try:
