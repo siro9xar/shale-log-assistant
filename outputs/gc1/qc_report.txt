@@ -1,0 +1,78 @@
+==============================================================================
+QC REPORT  -  USGS GC-1 West Woodway   (data/usgs_gc1_west_woodway/GC-1_West_Woodway.las)
+==============================================================================
+
+Curves found (file mnemonic [unit] -> standard name, conversion):
+  GR     [GAPI ] -> GR    [API]   conversion: none
+  CAL    [IN   ] -> CALI  [in]   conversion: none
+  RHOB   [G/CC ] -> RHOB  [g/cc]   conversion: none
+  DRHO   [G/CC ] -> DRHO  [g/cc]   conversion: none
+  NPHI   [PU   ] -> NPHI  [v/v]   conversion: percent -> v/v (divided by 100)
+  ILD    [OHMM ] -> RT    [ohm.m]   conversion: none
+  DT     [US/F ] -> DT    [us/ft]   conversion: none
+Curves NOT in file: CGR, BS, PEF
+
+DEPTH (ft): 5969 samples, 0.1 - 596.9, median step 0.1
+  ok    monotonic, regular step, header matches data
+
+COVERAGE over the whole file:
+  GR    valid 0.1 - 592.7 ft   missing 0.7% of file
+  RHOB  valid 14.1 - 594.4 ft   missing 2.8% of file
+  NPHI  valid 13.1 - 593.9 ft   missing 2.7% of file
+  RT    valid 7.1 - 413.1 ft   missing 32.0% of file
+  DT    valid 2.3 - 411.3 ft   missing 31.5% of file
+  CALI  valid 0.2 - 596.8 ft   missing 0.0% of file
+  DRHO  valid 0.2 - 594.4 ft   missing 0.4% of file
+
+PROCESSING INTERVAL: 14.1 - 413.1 ft  (3991 samples; first to last depth where ['GR', 'RHOB', 'RT'] all have data)
+
+MISSING DATA inside the processing interval:
+  ok    GR         0 samples (0.0%) in 0 gap(s)
+  ok    RHOB       0 samples (0.0%) in 0 gap(s)
+  ok    NPHI       0 samples (0.0%) in 0 gap(s)
+  ok    RT         0 samples (0.0%) in 0 gap(s)
+  FLAG  DT        18 samples (0.5%) in 1 gap(s), longest gap 411.4 - 413.1 ft
+  ok    CALI       0 samples (0.0%) in 0 gap(s)
+  ok    DRHO       0 samples (0.0%) in 0 gap(s)
+
+OUT OF PHYSICAL RANGE (set to NaN):
+  ok    GR         0 samples outside [0.0, 1000.0]
+  ok    RHOB       0 samples outside [1.2, 3.2]
+  ok    NPHI       0 samples outside [-0.15, 1.0]
+  ok    RT         0 samples outside [0.01, 100000.0]
+  ok    DT         0 samples outside [40.0, 240.0]
+  ok    CALI       0 samples outside [2.0, 40.0]
+
+FLATLINE / dead tool (set to NaN):
+  ok    GR         0 samples
+  ok    RHOB       0 samples
+  ok    NPHI       0 samples
+  ok    RT         0 samples
+  FLAG  DT        84 samples  at [[191.2, 193.7], [233.6, 235.8], [407.9, 411.3]]
+
+WASHOUT (caliper):
+  bit size: config qc.bit_size_in = 5.5 in (ASSUMED, no bit-size curve)
+  FLAG  217 samples (5.4%) with CALI - bit > 1.5 in; max over-gauge 6.33 in
+        378.9 - 380.5 ft   (max +3.17 in)
+        381.2 - 383.2 ft   (max +6.06 in)
+        384.5 - 386.0 ft   (max +3.73 in)
+        389.8 - 391.3 ft   (max +3.39 in)
+        392.1 - 397.5 ft   (max +5.03 in)
+        399.0 - 399.7 ft   (max +3.46 in)
+        400.9 - 405.7 ft   (max +6.33 in)
+        410.1 - 410.7 ft   (max +2.88 in)
+  FLAG  385 samples with |DRHO| > 0.15 g/cc
+  action on bad hole: null_density_neutron
+
+SPIKES (Hampel filter; action: set_nan):
+  ok    GR         0 samples
+  ok    RHOB       0 samples
+  ok    NPHI       0 samples
+  ok    RT         0 samples
+  ok    DT         0 samples
+
+SAMPLES SET TO NaN BY QC (curve: reason = count):
+  RHOB  badhole = 602
+  NPHI  badhole = 602
+  DT    flatline = 84
+==============================================================================

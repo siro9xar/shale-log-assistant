@@ -1,0 +1,857 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "shale_assistant 1.0.0 - every number below was computed in Python",
+  "well": {
+    "name": "USGS GC-1 West Woodway",
+    "file": "GC-1_West_Woodway.las",
+    "depth_unit": "FT",
+    "depth_reference": "measured depth as recorded in the LAS",
+    "top": 14.1,
+    "base": 413.1,
+    "step": 0.1,
+    "n_samples": 3991,
+    "curves_used": {
+      "GR": "GR",
+      "CALI": "CAL",
+      "RHOB": "RHOB",
+      "DRHO": "DRHO",
+      "NPHI": "NPHI",
+      "RT": "ILD",
+      "DT": "DT"
+    }
+  },
+  "units": {
+    "depth_and_thickness": "as in the LAS (see well.depth_unit), measured depth",
+    "vsh": "v/v (fraction, 0-1)",
+    "phit": "v/v (fraction)",
+    "phie": "v/v (fraction)",
+    "sw": "v/v (fraction, 0-1)",
+    "toc": "wt%",
+    "gr": "API",
+    "rhob": "g/cc",
+    "nphi": "v/v",
+    "rt": "ohm.m",
+    "rwa": "ohm.m",
+    "dt": "us/ft",
+    "cali": "in",
+    "fractions_and_confidence": "fraction, 0-1"
+  },
+  "parameters": {
+    "vsh": {
+      "gr_curve": "GR",
+      "larionov_variant": "older",
+      "use_for_downstream": "larionov",
+      "gr_clean": 58.8,
+      "gr_shale": 183.44
+    },
+    "toc": {
+      "method": "sonic",
+      "lom": 7.0,
+      "min_vsh": 0.4,
+      "baseline_interval": [
+        166.0,
+        191.1
+      ],
+      "rt_baseline": 1.927,
+      "dt_baseline": 109.34,
+      "rhob_baseline": 2.229,
+      "nphi_baseline": 0.378
+    },
+    "porosity": {
+      "rho_matrix": 2.65,
+      "rho_fluid": 1.0,
+      "nphi_matrix_offset": 0.0,
+      "fluid_type": "liquid",
+      "phit_method": "density",
+      "phie_method": "density",
+      "phi_max": 0.45,
+      "kerogen": {
+        "apply": true,
+        "rho_kerogen": 1.3,
+        "k_factor": 1.2,
+        "hi_kerogen": 0.65
+      },
+      "rho_shale": 2.156,
+      "nphi_shale": 0.32
+    },
+    "sw": {
+      "a": 1.0,
+      "m": 2.0,
+      "n": 2.0,
+      "rw": 0.2,
+      "archie_porosity": "PHIT",
+      "simandoux_porosity": "PHIE",
+      "phi_min": 0.01,
+      "rsh": 3.38
+    },
+    "vsh_used_downstream": "vsh_larionov_older",
+    "auto_picked": {
+      "vsh.gr_clean": "P5 of GR over the processing interval",
+      "vsh.gr_shale": "P95 of GR over the processing interval",
+      "toc.rt_baseline": "median over baseline_interval 166.0-191.1",
+      "toc.dt_baseline": "median over baseline_interval 166.0-191.1",
+      "toc.rhob_baseline": "median over baseline_interval 166.0-191.1",
+      "toc.nphi_baseline": "median over baseline_interval 166.0-191.1",
+      "porosity.rho_shale": "median where IGR >= 0.8 and TOC < 1.0 wt% (626 samples)",
+      "porosity.nphi_shale": "median where IGR >= 0.8 and TOC < 1.0 wt% (626 samples)",
+      "sw.rsh": "median RT where IGR >= 0.8 and TOC < 1.0 wt% (626 samples)"
+    },
+    "notes": [],
+    "cutoffs": {
+      "toc_min_wtpct": 2.0
+    },
+    "low_confidence_thresholds": {
+      "badhole_fraction": 0.2,
+      "min_valid_fraction": 0.7,
+      "sw_above_one_fraction": 0.2,
+      "facies_mean_confidence": 0.6
+    }
+  },
+  "formulas": {
+    "igr": "IGR = (GR - GR_clean) / (GR_shale - GR_clean), clipped to 0-1",
+    "vsh_linear": "Vsh = IGR",
+    "vsh_larionov_older": "Vsh = 0.33 * (2^(2 * IGR) - 1)   [Larionov 1969, older / consolidated rocks]",
+    "dlogr_sonic": "DlogR = log10(RT / RT_baseline) + 0.02 * (DT - DT_baseline)   [DT in us/ft]",
+    "toc": "TOC [wt%] = DlogR * 10^(2.297 - 0.1688 * LOM); negative values set to 0; set to 0 where Vsh < min_vsh   [Passey et al. 1990]",
+    "phid": "PHID = (rho_matrix - RHOB) / (rho_matrix - rho_fluid)",
+    "kerogen_volume": "Vker = k_factor * (TOC / 100) * RHOB / rho_kerogen",
+    "phid_kerogen_corrected": "PHID_k = PHID - Vker * (rho_matrix - rho_kerogen) / (rho_matrix - rho_fluid)",
+    "phin_kerogen_corrected": "PHIN_k = NPHI + nphi_matrix_offset - Vker * hi_kerogen",
+    "phit_density": "PHIT = PHID_k, clipped to 0-phi_max",
+    "phie_density": "PHIE = PHID_k - Vsh * PHID_shale, clipped to 0-phi_max and never above PHIT; PHID_shale = (rho_matrix - rho_shale) / (rho_matrix - rho_fluid)",
+    "sw_archie": "Sw = ((a * Rw) / (PHI^m * RT))^(1/n), clipped to 0-1   [Archie 1942]",
+    "sw_simandoux": "1/RT = PHI^m * Sw^n / (a * Rw) + Vsh * Sw / Rsh, solved for Sw, clipped to 0-1   [Simandoux 1963]",
+    "sw_low_porosity": "Sw = 1 where PHI < phi_min",
+    "rwa": "Rwa = RT * PHIT^m / a   (apparent water resistivity; equals Rw in clean water-bearing rock)"
+  },
+  "qc_summary": {
+    "depth_issues": [],
+    "warnings": [],
+    "curves_not_in_file": [
+      "CGR",
+      "BS",
+      "PEF"
+    ],
+    "unit_conversions": {
+      "NPHI": "percent -> v/v (divided by 100)"
+    },
+    "missing_fraction_in_interval": {
+      "GR": 0.0,
+      "RHOB": 0.0,
+      "NPHI": 0.0,
+      "RT": 0.0,
+      "DT": 0.005,
+      "CALI": 0.0,
+      "DRHO": 0.0
+    },
+    "washout": {
+      "assessed": true,
+      "bit_size_source": "config qc.bit_size_in = 5.5 in (ASSUMED, no bit-size curve)",
+      "threshold_in": 1.5,
+      "samples": 217,
+      "fraction": 0.054,
+      "max_overgauge_in": 6.33,
+      "not_assessed_samples": 0
+    },
+    "undergauge_caliper_samples": 0,
+    "spike_samples": {
+      "GR": 0,
+      "RHOB": 0,
+      "NPHI": 0,
+      "RT": 0,
+      "DT": 0
+    },
+    "flatline_samples": {
+      "GR": 0,
+      "RHOB": 0,
+      "NPHI": 0,
+      "RT": 0,
+      "DT": 84
+    },
+    "out_of_range_samples": {
+      "GR": 0,
+      "RHOB": 0,
+      "NPHI": 0,
+      "RT": 0,
+      "DT": 0,
+      "CALI": 0
+    },
+    "samples_set_to_nan": {
+      "RHOB": {
+        "badhole": 602
+      },
+      "NPHI": {
+        "badhole": 602
+      },
+      "DT": {
+        "flatline": 84
+      }
+    },
+    "badhole_action": "null_density_neutron",
+    "spike_action": "set_nan"
+  },
+  "facies_model": {
+    "available": true,
+    "model_file": "facies_rf.joblib",
+    "low_confidence_threshold": 0.6,
+    "confidence_definition": "mean of the per-sample maximum class probability (share of tree votes); not calibrated",
+    "classes": [
+      "Anhydrite",
+      "Chalk",
+      "Coal",
+      "Dolomite",
+      "Limestone",
+      "Marl",
+      "Sandstone",
+      "Sandstone/Shale",
+      "Shale",
+      "Tuff"
+    ],
+    "features": [
+      "GR",
+      "RHOB",
+      "NPHI",
+      "RT_LOG10",
+      "DT"
+    ],
+    "split": "well-based: whole wells held out for testing",
+    "n_train_wells": 26,
+    "n_test_wells": 9,
+    "test_accuracy": 0.688,
+    "test_balanced_accuracy": 0.436,
+    "test_macro_f1": 0.349
+  },
+  "zonation": {
+    "method": "auto",
+    "n_zones": 10,
+    "curves": [
+      "GR",
+      "RHOB",
+      "NPHI",
+      "RT_LOG10",
+      "DT"
+    ]
+  },
+  "zones": [
+    {
+      "zone_id": 1,
+      "name": "Z1",
+      "top": 14.1,
+      "base": 89.9,
+      "thickness": 75.8,
+      "n_samples": 758,
+      "averages": {
+        "vsh_linear_mean": 0.092,
+        "vsh_larionov_mean": 0.048,
+        "phit_mean": 0.222,
+        "phie_mean": 0.21,
+        "sw_archie_mean": 0.593,
+        "sw_simandoux_mean": 0.6,
+        "sw_archie_porosity_weighted": 0.589,
+        "sw_simandoux_porosity_weighted": 0.596,
+        "toc_mean_wtpct": 0.0,
+        "toc_max_wtpct": 0.0,
+        "net_toc_thickness": 0.0,
+        "rwa_median": 0.5448,
+        "valid_fraction_porosity": 0.748,
+        "valid_fraction_sw": 0.748,
+        "valid_fraction_toc": 1.0,
+        "sw_archie_above_one_fraction": 0.0,
+        "low_porosity_fraction": 0.0
+      },
+      "log_averages": {
+        "gr_mean": 69.7,
+        "rhob_mean": 2.284,
+        "nphi_mean": 0.154,
+        "dt_mean": 75.5,
+        "cali_mean": 5.6,
+        "rt_geometric_mean": 12.03
+      },
+      "facies": {
+        "dominant": "Sandstone",
+        "dominant_fraction": 1.0,
+        "mean_confidence": 0.521,
+        "classified_fraction": 0.748,
+        "distribution": {
+          "Sandstone": 1.0
+        },
+        "low_confidence": true
+      },
+      "qc": {
+        "badhole_fraction": 0.252,
+        "spike_samples": 0,
+        "out_of_range_samples": 0,
+        "flatline_samples": 0,
+        "undergauge_caliper_samples": 0
+      },
+      "low_confidence": true,
+      "low_confidence_reasons": [
+        "WASHOUT: bad hole over a large part of the zone; density, neutron, porosity and Sw are unreliable",
+        "FACIES: classifier confidence is below the threshold"
+      ]
+    },
+    {
+      "zone_id": 2,
+      "name": "Z2",
+      "top": 89.9,
+      "base": 127.8,
+      "thickness": 37.9,
+      "n_samples": 379,
+      "averages": {
+        "vsh_linear_mean": 0.295,
+        "vsh_larionov_mean": 0.173,
+        "phit_mean": 0.22,
+        "phie_mean": 0.167,
+        "sw_archie_mean": 0.739,
+        "sw_simandoux_mean": 0.803,
+        "sw_archie_porosity_weighted": 0.738,
+        "sw_simandoux_porosity_weighted": 0.795,
+        "toc_mean_wtpct": 0.04,
+        "toc_max_wtpct": 2.98,
+        "net_toc_thickness": 0.3,
+        "rwa_median": 0.3832,
+        "valid_fraction_porosity": 0.855,
+        "valid_fraction_sw": 0.855,
+        "valid_fraction_toc": 1.0,
+        "sw_archie_above_one_fraction": 0.003,
+        "low_porosity_fraction": 0.0
+      },
+      "log_averages": {
+        "gr_mean": 95.5,
+        "rhob_mean": 2.286,
+        "nphi_mean": 0.185,
+        "dt_mean": 82.9,
+        "cali_mean": 5.6,
+        "rt_geometric_mean": 7.68
+      },
+      "facies": {
+        "dominant": "Sandstone",
+        "dominant_fraction": 0.846,
+        "mean_confidence": 0.56,
+        "classified_fraction": 0.855,
+        "distribution": {
+          "Sandstone": 0.846,
+          "Shale": 0.154
+        },
+        "low_confidence": true
+      },
+      "qc": {
+        "badhole_fraction": 0.145,
+        "spike_samples": 0,
+        "out_of_range_samples": 0,
+        "flatline_samples": 0,
+        "undergauge_caliper_samples": 0
+      },
+      "low_confidence": true,
+      "low_confidence_reasons": [
+        "FACIES: classifier confidence is below the threshold"
+      ]
+    },
+    {
+      "zone_id": 3,
+      "name": "Z3",
+      "top": 127.8,
+      "base": 162.0,
+      "thickness": 34.2,
+      "n_samples": 342,
+      "averages": {
+        "vsh_linear_mean": 0.044,
+        "vsh_larionov_mean": 0.022,
+        "phit_mean": 0.202,
+        "phie_mean": 0.195,
+        "sw_archie_mean": 0.722,
+        "sw_simandoux_mean": 0.728,
+        "sw_archie_porosity_weighted": 0.719,
+        "sw_simandoux_porosity_weighted": 0.722,
+        "toc_mean_wtpct": 0.0,
+        "toc_max_wtpct": 0.0,
+        "net_toc_thickness": 0.0,
+        "rwa_median": 0.4077,
+        "valid_fraction_porosity": 0.778,
+        "valid_fraction_sw": 0.778,
+        "valid_fraction_toc": 1.0,
+        "sw_archie_above_one_fraction": 0.034,
+        "low_porosity_fraction": 0.0
+      },
+      "log_averages": {
+        "gr_mean": 63.7,
+        "rhob_mean": 2.317,
+        "nphi_mean": 0.154,
+        "dt_mean": 70.4,
+        "cali_mean": 5.59,
+        "rt_geometric_mean": 9.8
+      },
+      "facies": {
+        "dominant": "Sandstone",
+        "dominant_fraction": 0.955,
+        "mean_confidence": 0.457,
+        "classified_fraction": 0.778,
+        "distribution": {
+          "Sandstone": 0.955,
+          "Sandstone/Shale": 0.026,
+          "Shale": 0.019
+        },
+        "low_confidence": true
+      },
+      "qc": {
+        "badhole_fraction": 0.222,
+        "spike_samples": 0,
+        "out_of_range_samples": 0,
+        "flatline_samples": 0,
+        "undergauge_caliper_samples": 0
+      },
+      "low_confidence": true,
+      "low_confidence_reasons": [
+        "WASHOUT: bad hole over a large part of the zone; density, neutron, porosity and Sw are unreliable",
+        "FACIES: classifier confidence is below the threshold"
+      ]
+    },
+    {
+      "zone_id": 4,
+      "name": "Z4",
+      "top": 162.0,
+      "base": 190.8,
+      "thickness": 28.8,
+      "n_samples": 288,
+      "averages": {
+        "vsh_linear_mean": 0.743,
+        "vsh_larionov_mean": 0.599,
+        "phit_mean": 0.256,
+        "phie_mean": 0.076,
+        "sw_archie_mean": 1.0,
+        "sw_simandoux_mean": 1.0,
+        "sw_archie_porosity_weighted": 1.0,
+        "sw_simandoux_porosity_weighted": 1.0,
+        "toc_mean_wtpct": 0.06,
+        "toc_max_wtpct": 0.34,
+        "net_toc_thickness": 0.0,
+        "rwa_median": 0.1254,
+        "valid_fraction_porosity": 1.0,
+        "valid_fraction_sw": 1.0,
+        "valid_fraction_toc": 1.0,
+        "sw_archie_above_one_fraction": 1.0,
+        "low_porosity_fraction": 0.0
+      },
+      "log_averages": {
+        "gr_mean": 151.5,
+        "rhob_mean": 2.226,
+        "nphi_mean": 0.374,
+        "dt_mean": 107.4,
+        "cali_mean": 5.7,
+        "rt_geometric_mean": 1.93
+      },
+      "facies": {
+        "dominant": "Shale",
+        "dominant_fraction": 1.0,
+        "mean_confidence": 0.937,
+        "classified_fraction": 1.0,
+        "distribution": {
+          "Shale": 1.0
+        },
+        "low_confidence": false
+      },
+      "qc": {
+        "badhole_fraction": 0.0,
+        "spike_samples": 0,
+        "out_of_range_samples": 0,
+        "flatline_samples": 0,
+        "undergauge_caliper_samples": 0
+      },
+      "low_confidence": true,
+      "low_confidence_reasons": [
+        "SW ABOVE 1: Archie gives Sw > 1 on many samples before clipping; Rw, m or the matrix density do not fit this zone"
+      ]
+    },
+    {
+      "zone_id": 5,
+      "name": "Z5",
+      "top": 190.8,
+      "base": 239.1,
+      "thickness": 48.3,
+      "n_samples": 483,
+      "averages": {
+        "vsh_linear_mean": 0.663,
+        "vsh_larionov_mean": 0.504,
+        "phit_mean": 0.22,
+        "phie_mean": 0.069,
+        "sw_archie_mean": 1.0,
+        "sw_simandoux_mean": 1.0,
+        "sw_archie_porosity_weighted": 1.0,
+        "sw_simandoux_porosity_weighted": 1.0,
+        "toc_mean_wtpct": 0.12,
+        "toc_max_wtpct": 1.74,
+        "net_toc_thickness": 0.0,
+        "rwa_median": 0.1217,
+        "valid_fraction_porosity": 1.0,
+        "valid_fraction_sw": 1.0,
+        "valid_fraction_toc": 0.899,
+        "sw_archie_above_one_fraction": 1.0,
+        "low_porosity_fraction": 0.0
+      },
+      "log_averages": {
+        "gr_mean": 141.4,
+        "rhob_mean": 2.285,
+        "nphi_mean": 0.339,
+        "dt_mean": 101.4,
+        "cali_mean": 5.65,
+        "rt_geometric_mean": 2.54
+      },
+      "facies": {
+        "dominant": "Shale",
+        "dominant_fraction": 1.0,
+        "mean_confidence": 0.81,
+        "classified_fraction": 0.899,
+        "distribution": {
+          "Shale": 1.0
+        },
+        "low_confidence": false
+      },
+      "qc": {
+        "badhole_fraction": 0.0,
+        "spike_samples": 0,
+        "out_of_range_samples": 0,
+        "flatline_samples": 49,
+        "undergauge_caliper_samples": 0
+      },
+      "low_confidence": true,
+      "low_confidence_reasons": [
+        "SW ABOVE 1: Archie gives Sw > 1 on many samples before clipping; Rw, m or the matrix density do not fit this zone"
+      ]
+    },
+    {
+      "zone_id": 6,
+      "name": "Z6",
+      "top": 239.1,
+      "base": 266.8,
+      "thickness": 27.7,
+      "n_samples": 277,
+      "averages": {
+        "vsh_linear_mean": 0.426,
+        "vsh_larionov_mean": 0.275,
+        "phit_mean": 0.206,
+        "phie_mean": 0.123,
+        "sw_archie_mean": 0.982,
+        "sw_simandoux_mean": 1.0,
+        "sw_archie_porosity_weighted": 0.98,
+        "sw_simandoux_porosity_weighted": 1.0,
+        "toc_mean_wtpct": 0.21,
+        "toc_max_wtpct": 2.19,
+        "net_toc_thickness": 1.5,
+        "rwa_median": 0.1991,
+        "valid_fraction_porosity": 1.0,
+        "valid_fraction_sw": 1.0,
+        "valid_fraction_toc": 1.0,
+        "sw_archie_above_one_fraction": 0.502,
+        "low_porosity_fraction": 0.0
+      },
+      "log_averages": {
+        "gr_mean": 111.9,
+        "rhob_mean": 2.305,
+        "nphi_mean": 0.273,
+        "dt_mean": 90.5,
+        "cali_mean": 5.6,
+        "rt_geometric_mean": 4.53
+      },
+      "facies": {
+        "dominant": "Shale",
+        "dominant_fraction": 0.794,
+        "mean_confidence": 0.664,
+        "classified_fraction": 1.0,
+        "distribution": {
+          "Shale": 0.794,
+          "Sandstone": 0.155,
+          "Sandstone/Shale": 0.051
+        },
+        "low_confidence": false
+      },
+      "qc": {
+        "badhole_fraction": 0.0,
+        "spike_samples": 0,
+        "out_of_range_samples": 0,
+        "flatline_samples": 0,
+        "undergauge_caliper_samples": 0
+      },
+      "low_confidence": true,
+      "low_confidence_reasons": [
+        "SW ABOVE 1: Archie gives Sw > 1 on many samples before clipping; Rw, m or the matrix density do not fit this zone"
+      ]
+    },
+    {
+      "zone_id": 7,
+      "name": "Z7",
+      "top": 266.8,
+      "base": 300.9,
+      "thickness": 34.1,
+      "n_samples": 341,
+      "averages": {
+        "vsh_linear_mean": 0.439,
+        "vsh_larionov_mean": 0.282,
+        "phit_mean": 0.263,
+        "phie_mean": 0.178,
+        "sw_archie_mean": 0.825,
+        "sw_simandoux_mean": 0.932,
+        "sw_archie_porosity_weighted": 0.822,
+        "sw_simandoux_porosity_weighted": 0.93,
+        "toc_mean_wtpct": 0.08,
+        "toc_max_wtpct": 1.72,
+        "net_toc_thickness": 0.0,
+        "rwa_median": 0.3044,
+        "valid_fraction_porosity": 0.95,
+        "valid_fraction_sw": 0.95,
+        "valid_fraction_toc": 1.0,
+        "sw_archie_above_one_fraction": 0.179,
+        "low_porosity_fraction": 0.0
+      },
+      "log_averages": {
+        "gr_mean": 113.5,
+        "rhob_mean": 2.214,
+        "nphi_mean": 0.283,
+        "dt_mean": 88.8,
+        "cali_mean": 5.6,
+        "rt_geometric_mean": 4.25
+      },
+      "facies": {
+        "dominant": "Shale",
+        "dominant_fraction": 0.951,
+        "mean_confidence": 0.718,
+        "classified_fraction": 0.95,
+        "distribution": {
+          "Shale": 0.951,
+          "Sandstone/Shale": 0.04,
+          "Coal": 0.006,
+          "Sandstone": 0.003
+        },
+        "low_confidence": false
+      },
+      "qc": {
+        "badhole_fraction": 0.05,
+        "spike_samples": 0,
+        "out_of_range_samples": 0,
+        "flatline_samples": 0,
+        "undergauge_caliper_samples": 0
+      },
+      "low_confidence": false,
+      "low_confidence_reasons": []
+    },
+    {
+      "zone_id": 8,
+      "name": "Z8",
+      "top": 300.9,
+      "base": 362.9,
+      "thickness": 62.0,
+      "n_samples": 620,
+      "averages": {
+        "vsh_linear_mean": 0.898,
+        "vsh_larionov_mean": 0.827,
+        "phit_mean": 0.305,
+        "phie_mean": 0.061,
+        "sw_archie_mean": 0.805,
+        "sw_simandoux_mean": 0.982,
+        "sw_archie_porosity_weighted": 0.798,
+        "sw_simandoux_porosity_weighted": 0.974,
+        "toc_mean_wtpct": 0.02,
+        "toc_max_wtpct": 0.67,
+        "net_toc_thickness": 0.0,
+        "rwa_median": 0.32,
+        "valid_fraction_porosity": 0.915,
+        "valid_fraction_sw": 0.915,
+        "valid_fraction_toc": 1.0,
+        "sw_archie_above_one_fraction": 0.069,
+        "low_porosity_fraction": 0.0
+      },
+      "log_averages": {
+        "gr_mean": 174.9,
+        "rhob_mean": 2.146,
+        "nphi_mean": 0.31,
+        "dt_mean": 90.9,
+        "cali_mean": 5.55,
+        "rt_geometric_mean": 3.39
+      },
+      "facies": {
+        "dominant": "Shale",
+        "dominant_fraction": 1.0,
+        "mean_confidence": 0.821,
+        "classified_fraction": 0.915,
+        "distribution": {
+          "Shale": 1.0
+        },
+        "low_confidence": false
+      },
+      "qc": {
+        "badhole_fraction": 0.085,
+        "spike_samples": 0,
+        "out_of_range_samples": 0,
+        "flatline_samples": 0,
+        "undergauge_caliper_samples": 0
+      },
+      "low_confidence": false,
+      "low_confidence_reasons": []
+    },
+    {
+      "zone_id": 9,
+      "name": "Z9",
+      "top": 362.9,
+      "base": 379.0,
+      "thickness": 16.1,
+      "n_samples": 161,
+      "averages": {
+        "vsh_linear_mean": 0.666,
+        "vsh_larionov_mean": 0.502,
+        "phit_mean": 0.31,
+        "phie_mean": 0.16,
+        "sw_archie_mean": 0.972,
+        "sw_simandoux_mean": 1.0,
+        "sw_archie_porosity_weighted": 0.966,
+        "sw_simandoux_porosity_weighted": 1.0,
+        "toc_mean_wtpct": 0.99,
+        "toc_max_wtpct": 2.07,
+        "net_toc_thickness": 0.5,
+        "rwa_median": 0.1699,
+        "valid_fraction_porosity": 0.95,
+        "valid_fraction_sw": 0.95,
+        "valid_fraction_toc": 1.0,
+        "sw_archie_above_one_fraction": 0.647,
+        "low_porosity_fraction": 0.0
+      },
+      "log_averages": {
+        "gr_mean": 141.8,
+        "rhob_mean": 2.112,
+        "nphi_mean": 0.379,
+        "dt_mean": 114.8,
+        "cali_mean": 6.25,
+        "rt_geometric_mean": 1.79
+      },
+      "facies": {
+        "dominant": "Shale",
+        "dominant_fraction": 1.0,
+        "mean_confidence": 0.881,
+        "classified_fraction": 0.95,
+        "distribution": {
+          "Shale": 1.0
+        },
+        "low_confidence": false
+      },
+      "qc": {
+        "badhole_fraction": 0.05,
+        "spike_samples": 0,
+        "out_of_range_samples": 0,
+        "flatline_samples": 0,
+        "undergauge_caliper_samples": 0
+      },
+      "low_confidence": true,
+      "low_confidence_reasons": [
+        "SW ABOVE 1: Archie gives Sw > 1 on many samples before clipping; Rw, m or the matrix density do not fit this zone"
+      ]
+    },
+    {
+      "zone_id": 10,
+      "name": "Z10",
+      "top": 379.0,
+      "base": 413.1,
+      "thickness": 34.1,
+      "n_samples": 342,
+      "averages": {
+        "vsh_linear_mean": 0.718,
+        "vsh_larionov_mean": 0.564,
+        "phit_mean": 0.358,
+        "phie_mean": 0.193,
+        "sw_archie_mean": 0.903,
+        "sw_simandoux_mean": 0.981,
+        "sw_archie_porosity_weighted": 0.888,
+        "sw_simandoux_porosity_weighted": 0.963,
+        "toc_mean_wtpct": 3.68,
+        "toc_max_wtpct": 6.07,
+        "net_toc_thickness": 26.1,
+        "rwa_median": 0.2298,
+        "valid_fraction_porosity": 0.409,
+        "valid_fraction_sw": 0.409,
+        "valid_fraction_toc": 0.845,
+        "sw_archie_above_one_fraction": 0.336,
+        "low_porosity_fraction": 0.0
+      },
+      "log_averages": {
+        "gr_mean": 148.2,
+        "rhob_mean": 1.994,
+        "nphi_mean": 0.401,
+        "dt_mean": 124.1,
+        "cali_mean": 7.59,
+        "rt_geometric_mean": 1.84
+      },
+      "facies": {
+        "dominant": "Shale",
+        "dominant_fraction": 1.0,
+        "mean_confidence": 0.864,
+        "classified_fraction": 0.292,
+        "distribution": {
+          "Shale": 1.0
+        },
+        "low_confidence": false
+      },
+      "qc": {
+        "badhole_fraction": 0.591,
+        "spike_samples": 0,
+        "out_of_range_samples": 0,
+        "flatline_samples": 35,
+        "undergauge_caliper_samples": 0
+      },
+      "low_confidence": true,
+      "low_confidence_reasons": [
+        "WASHOUT: bad hole over a large part of the zone; density, neutron, porosity and Sw are unreliable",
+        "MISSING DATA: porosity could be computed on only part of the zone; the average is not representative",
+        "MISSING DATA: Sw could be computed on only part of the zone; the average is not representative",
+        "SW ABOVE 1: Archie gives Sw > 1 on many samples before clipping; Rw, m or the matrix density do not fit this zone",
+        "FACIES: only part of the zone could be classified (missing or rejected log samples)"
+      ]
+    }
+  ],
+  "rankings": {
+    "toc_mean_wtpct_high_to_low": [
+      "Z10",
+      "Z9",
+      "Z6",
+      "Z5",
+      "Z7",
+      "Z4",
+      "Z2",
+      "Z8",
+      "Z1",
+      "Z3"
+    ],
+    "net_toc_thickness_high_to_low": [
+      "Z10",
+      "Z6",
+      "Z9",
+      "Z2",
+      "Z1",
+      "Z3",
+      "Z4",
+      "Z5",
+      "Z7",
+      "Z8"
+    ],
+    "phit_mean_high_to_low": [
+      "Z10",
+      "Z9",
+      "Z8",
+      "Z7",
+      "Z4",
+      "Z1",
+      "Z2",
+      "Z5",
+      "Z6",
+      "Z3"
+    ],
+    "sw_archie_mean_low_to_high": [
+      "Z1",
+      "Z3",
+      "Z2",
+      "Z8",
+      "Z7",
+      "Z10",
+      "Z9",
+      "Z6",
+      "Z4",
+      "Z5"
+    ]
+  }
+}

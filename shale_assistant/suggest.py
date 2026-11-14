@@ -324,7 +324,7 @@ def format_suggestions(rw: dict, passey: dict, current_baseline: dict | None, ma
 
     c = rw["criteria"]
     L.append(f"\n1. Rw FROM Rwa = RT * PHIT^m / a   (a = {c['a']}, m = {c['m']})")
-    L.append(f"   samples: Vsh <= {c['vsh_max']}, PHIT >= {c['phit_min']}, good hole, runs >= {c['min_thickness']} m")
+    L.append(f"   samples: Vsh <= {c['vsh_max']}, PHIT >= {c['phit_min']}, good hole, runs >= {c['min_thickness']} {used['depth_unit']}")
     if rw["n_samples"]:
         s = rw["rwa"]
         L.append(f"   {rw['n_samples']} samples   Rwa P10 {_f(s['p10'], 4)}   P50 {_f(s['p50'], 4)}   "
@@ -355,7 +355,7 @@ def format_suggestions(rw: dict, passey: dict, current_baseline: dict | None, ma
     c = passey["criteria"]
     L.append(f"\n2. PASSEY BASELINE  (method {passey['method']}: RT vs {cur})")
     sep = f", NPHI - PHID >= {c['nd_separation_min']}" if c["nd_separation_min"] is not None else ""
-    L.append(f"   shale: {c['shale_curve']} >= {c['igr_min']}{sep}, runs >= {c['min_thickness']} m, "
+    L.append(f"   shale: {c['shale_curve']} >= {c['igr_min']}{sep}, runs >= {c['min_thickness']} {used['depth_unit']}, "
              f"bad hole <= {c['max_badhole_fraction']:.0%}")
     L.append("   ranked by LOWEST median RT (lean, non-source shale); prefer one close in depth to the source interval")
     ranked = [x for x in passey["candidates"] if "rank" in x]
@@ -416,7 +416,8 @@ def run_suggestions(curves: pd.DataFrame, summary: dict, method: str | None = No
     ma = suggest_matrix_density(curves, p["porosity"]["rho_fluid"], p["porosity"]["nphi_matrix_offset"])
     if plot_path:
         plot_passey(curves, passey, plot_path, p["toc"].get("baseline_interval"))
-    used = {"rw": p["sw"]["rw"], "rho_matrix": p["porosity"]["rho_matrix"]}
+    used = {"rw": p["sw"]["rw"], "rho_matrix": p["porosity"]["rho_matrix"],
+            "depth_unit": (summary.get("well", {}).get("depth_unit") or "depth units").lower()}
     text = format_suggestions(rw, passey, current, ma, used, plot_path)
     passey = {k: v for k, v in passey.items() if k != "shale_mask"}
     return {"rw": rw, "passey": passey, "current_baseline": current, "matrix_density": ma}, text

@@ -43,7 +43,8 @@ shale_log_assistant/
 │   ├── calibrate_with_core.py
 │   ├── generate_report.py
 │   ├── chat.py
-│   └── verify_report.py
+│   ├── verify_report.py
+│   └── csv_to_las.py
 ├── tests/                       23 tests, formulas checked against hand calculations
 ├── models/                      facies metrics + confusion matrix from the example training run
 └── outputs/example/             example run on Volve well 15/9-19 SR
@@ -137,6 +138,28 @@ What-if on Z9, Rw 0.02 -> 0.05 ohm.m (Python tool output): Archie Sw 0.2 -> 0.28
 Facies classifier (26 training wells, 9 held-out wells): accuracy 0.642, balanced accuracy 0.469, macro F1 0.336.
 A random row split of the same data scores 0.77 accuracy, which is the leakage a well-based split avoids.
 Shale is recognised well (F1 0.816); the rare classes are not.
+
+## Second example: USGS GC-1 West Woodway (Eagle Ford Group, thermally immature)
+
+Source: Burke, L.A., Birdwell, J.E., Paxton, S.T., 2022, *Wireline geophysical logging curves and infrared
+spectral data for the USGS Gulf Coast #1 West Woodway research wellbore, McLennan County, Texas*,
+U.S. Geological Survey data release, doi:10.5066/P9KZVG7P (ScienceBase item 5f4555cc82ce4c3d1225195e).
+USGS data release, US Government work (public domain in the US); metadata use constraints: "None",
+with the usual USGS no-warranty / no-liability statement.
+
+The release publishes the logs as CSV; `scripts/csv_to_las.py` converts them to LAS without changing a value
+(round-trip checked). Run with `config_shale.yaml`, where every changed assumption is marked `[GC-1 CHANGED]`:
+
+```bash
+python scripts/csv_to_las.py --csv data/usgs_gc1_west_woodway/wireline_geophysical_welllogs.csv \
+    --dictionary data/usgs_gc1_west_woodway/wireline_geophysical_welllogs_datadictionary.csv \
+    --out data/usgs_gc1_west_woodway/GC-1_West_Woodway.las --well "USGS GC-1 West Woodway"
+python scripts/run_pipeline.py --las data/usgs_gc1_west_woodway/GC-1_West_Woodway.las \
+    --config config_shale.yaml --out outputs/gc1
+```
+
+Nothing in `outputs/gc1` is calibrated against core. Core geochemistry for this well exists
+(USGS data release doi:10.5066/P95QUX1H) and is the next step (`scripts/calibrate_with_core.py`).
 
 ## Limits you should state when you present this
 

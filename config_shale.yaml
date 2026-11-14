@@ -1,0 +1,137 @@
+# Shale Log Assistant - config for the USGS GC-1 West Woodway well (Eagle Ford Group, McLennan County, Texas).
+# Copy of config.yaml. Every changed value is marked [GC-1 CHANGED] with the reason. Nothing here is calibrated.
+# Shale Log Assistant - every assumption lives here.
+# "auto" = Python picks the value from the data and records how in zone_summary.json -> parameters.auto_picked.
+#
+# NOTE: this file was RECONSTRUCTED because the original config.yaml was missing from the upload.
+# Values marked [example run] are copied from outputs/example/console_output.txt / qc_report.txt / README.
+# Values marked [assumed] were not recorded anywhere and were chosen as reasonable defaults.
+# Replace them with your original values if you still have the original file.
+
+well:
+  required_curves: [GR, RHOB, RT]        # [example run] processing interval = where these all have data
+  interval: null                         # [top, base] to force a processing interval; null = automatic
+
+# Standard name -> LAS mnemonics to look for (first match wins). Add your own mnemonics here.
+curves:                                  # [assumed aliases; order matches the example QC report]
+  GR:   [GR, GAPI, GRC, SGR, HGR, ECGR, GR_EDTC]
+  CGR:  [CGR, HCGR, GRCG]
+  CALI: [CALI, CAL, HCAL, CALX, C1, DCAL]
+  BS:   [BS, BIT, BITSIZE]
+  RHOB: [RHOB, DEN, RHOZ, ZDEN, DENS, HDEN]
+  DRHO: [DRHO, HDRA, ZCOR, DCOR]
+  NPHI: [NPHI, NEU, TNPH, NPOR, CNC, HNPO, NPHS]
+  RT:   [RT, RDEP, ILD, LLD, AT90, RD, RLA5, HDRS, RILD]
+  DT:   [DT, AC, DTC, DTCO, DT24]
+  PEF:  [PEF, PE, PEFZ, HPRA]
+
+qc:
+  depth_step_tolerance: 0.05             # [assumed] relative tolerance on the depth step
+  physical_limits:                       # [example run] values outside -> NaN
+    GR:   [0.0, 1000.0]
+    RHOB: [1.2, 3.2]
+    NPHI: [-0.15, 1.0]
+    RT:   [0.01, 100000.0]
+    DT:   [40.0, 240.0]
+    CALI: [2.0, 40.0]
+  flatline_curves: [GR, RHOB, NPHI, RT, DT]   # [example run]
+  flatline_min_samples: 20               # [assumed]
+  bit_size_in: 5.5                       # [GC-1 CHANGED] was 8.5. No bit size in the LAS or metadata; slim core hole,
+                                         #   caliper mode 5.5-5.75 in, median 5.58 in. 8.5 would flag the whole hole undergauge
+  washout_in: 1.5                        # [example run] CALI - bit > this -> washout
+  undergauge_in: 0.5                     # [example run] bit - CALI > this -> suspect caliper
+  drho_max: 0.15                         # [assumed] |DRHO| above this -> bad density
+  badhole_action: null_density_neutron   # [example run] or flag_only
+  spike:
+    curves: [GR, RHOB, NPHI, RT, DT]     # [example run] RT is tested on log10
+    window: 11                           # [assumed] must be odd
+    nsigma: 5.0                          # [assumed]
+    max_width: 2                         # [assumed] wider features are geology, not spikes
+    min_scale: {GR: 2.0, RHOB: 0.02, NPHI: 0.01, RT: 0.05, DT: 2.0}   # [assumed]
+    action: set_nan                      # [example run] or flag_only
+
+vsh:
+  gr_curve: GR                           # [example run]
+  gr_clean: auto                         # [example run] picked as P(lo) of GR
+  gr_shale: auto                         # [example run] picked as P(hi) of GR
+  auto_percentiles: [5, 95]              # [assumed]
+  larionov_variant: older                # [example run] older | tertiary
+  use_for_downstream: larionov           # [example run] linear | larionov
+
+toc:
+  method: sonic                          # [example run] sonic | density | neutron
+  lom: 7.0                               # [GC-1 CHANGED] was 10. USGS metadata: 'thermally immature Eagle Ford source rocks';
+                                         #   LOM ~7 is the immature end of Passey's scale. Assumed, not measured (no Ro/Tmax used)
+  min_vsh: 0.4                           # [example run] TOC = 0 where Vsh < this
+  baseline_interval: [166.0, 191.1]     # [GC-1 CHANGED] was [4340, 4375] m (Volve), which does not exist in this 597 ft well.
+                                         #   suggest_parameters candidate #3: 25 ft of good-hole shale (IGR>=0.5, N-D separation),
+                                         #   RT P50 1.93 ohm.m. #1 (374-377 ft) not used: 3 ft thick, 10% bad hole, in a zone with TOC 1.55
+  rt_baseline: auto
+  dt_baseline: auto
+  rhob_baseline: auto
+  nphi_baseline: auto
+
+porosity:
+  rho_matrix: 2.65                       # [example run]
+  rho_fluid: 1.0                         # [example run]
+  nphi_matrix_offset: 0.0                # [example run]
+  fluid_type: liquid                     # [example run] liquid | gas
+  phit_method: density                   # [example run] density | density_neutron
+  phie_method: density                   # [example run] density | density_neutron
+  phi_max: 0.45                          # [example run]
+  kerogen:                               # [example run]
+    apply: true
+    rho_kerogen: 1.3
+    k_factor: 1.2
+    hi_kerogen: 0.65
+  rho_shale: auto                        # [example run]
+  nphi_shale: auto                       # [example run]
+  shale_point_min_igr: 0.8               # [assumed] shale point = IGR >= this ...
+  shale_point_max_toc: 1.0               # [assumed] ... and TOC below this (wt%)
+
+sw:
+  a: 1.0                                 # [example run]
+  m: 2.0
+  n: 2.0
+  rw: 0.2                                # [GC-1 CHANGED] was 0.02 (deep, hot North Sea brine). Shallow (<600 ft, ~75 F) well:
+                                         #   Rwa P10 = 0.196 ohm.m in clean porous rock (suggest_parameters). NOT from a water sample
+  rsh: auto                              # [example run]
+  archie_porosity: PHIT                  # [example run]
+  simandoux_porosity: PHIE               # [example run]
+  phi_min: 0.01                          # [example run] Sw = 1 below this porosity
+
+facies:
+  features: [GR, RHOB, NPHI, RT_LOG10, DT]   # [assumed] the five curves in the training table; RT on log10
+  n_estimators: 200                      # [assumed]
+  max_depth: 20                          # [assumed]
+  min_samples_leaf: 5                    # [assumed]
+  class_weight: balanced_subsample       # [assumed]
+  random_state: 42                       # [example run]
+  test_fraction: 0.25                    # [example run] share of WELLS held out
+  test_wells: []                         # list well names to fix the test wells; empty = GroupShuffleSplit
+  cv_folds: 5                            # [example run]
+  min_class_samples: 100                 # [example run: must drop Basement (93) + Halite (20), keep Dolomite (428)]
+  low_confidence_threshold: 0.6          # [example run]
+
+zonation:
+  method: auto                           # auto | tops
+  curves: [GR, RHOB, NPHI, RT_LOG10, DT] # [assumed]
+  smooth_window: 11                      # [assumed] samples
+  min_thickness: 16.0                    # [GC-1 CHANGED] was 5.0 (metres in Volve). This LAS is in FEET; 16 ft ~ 5 m
+  max_zones: 10                          # [example run] 10 zones
+  min_gain_fraction: 0.005               # [assumed]
+  tops: []                               # for method: tops -> [{name: A, top: 1000, base: 1050}, ...]
+
+cutoffs:
+  toc_min_wtpct: 2.0                     # [assumed] net organic-rich thickness counts TOC >= this
+
+flags:                                   # a zone is flagged low confidence when ...
+  badhole_fraction: 0.2                  # [assumed] ... more than this share is bad hole
+  min_valid_fraction: 0.7                # [assumed] ... less than this share could be computed
+  sw_above_one_fraction: 0.2             # [assumed] ... Archie Sw > 1 on more than this share
+
+llm:
+  model: claude-fable-5-2                # [tests] expected by tests/test_pipeline_tools_llm.py
+  max_tokens: 8000                       # [assumed]
+  temperature: null                      # null = model default (the tests expect no temperature sent)
+  max_verification_retries: 2            # [assumed] re-ask when a number fails verification

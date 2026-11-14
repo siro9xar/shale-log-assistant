@@ -1,0 +1,380 @@
+{
+  "well": "USGS GC-1 West Woodway",
+  "file": "data/usgs_gc1_west_woodway/GC-1_West_Woodway.las",
+  "depth_unit": "FT",
+  "header": {
+    "STRT": 0.1,
+    "STOP": 596.9,
+    "STEP": 0.1,
+    "NULL": -999.25
+  },
+  "curves_found": {
+    "GR": {
+      "mnemonic": "GR",
+      "unit_in_file": "GAPI",
+      "standard_unit": "API",
+      "conversion": "none"
+    },
+    "CALI": {
+      "mnemonic": "CAL",
+      "unit_in_file": "IN",
+      "standard_unit": "in",
+      "conversion": "none"
+    },
+    "RHOB": {
+      "mnemonic": "RHOB",
+      "unit_in_file": "G/CC",
+      "standard_unit": "g/cc",
+      "conversion": "none"
+    },
+    "DRHO": {
+      "mnemonic": "DRHO",
+      "unit_in_file": "G/CC",
+      "standard_unit": "g/cc",
+      "conversion": "none"
+    },
+    "NPHI": {
+      "mnemonic": "NPHI",
+      "unit_in_file": "PU",
+      "standard_unit": "v/v",
+      "conversion": "percent -> v/v (divided by 100)"
+    },
+    "RT": {
+      "mnemonic": "ILD",
+      "unit_in_file": "OHMM",
+      "standard_unit": "ohm.m",
+      "conversion": "none"
+    },
+    "DT": {
+      "mnemonic": "DT",
+      "unit_in_file": "US/F",
+      "standard_unit": "us/ft",
+      "conversion": "none"
+    }
+  },
+  "curves_not_in_file": [
+    "CGR",
+    "BS",
+    "PEF"
+  ],
+  "warnings": [],
+  "depth": {
+    "n_samples": 5969,
+    "top": 0.1,
+    "base": 596.9,
+    "median_step": 0.1,
+    "n_reversals": 0,
+    "n_duplicate_depths": 0,
+    "n_irregular_steps": 0,
+    "n_gaps": 0,
+    "gaps": [],
+    "header_matches_data": true,
+    "issues": []
+  },
+  "coverage_whole_file": {
+    "GR": {
+      "first_valid_depth": 0.1,
+      "last_valid_depth": 592.7,
+      "missing_fraction_of_file": 0.007
+    },
+    "RHOB": {
+      "first_valid_depth": 14.1,
+      "last_valid_depth": 594.4,
+      "missing_fraction_of_file": 0.028
+    },
+    "NPHI": {
+      "first_valid_depth": 13.1,
+      "last_valid_depth": 593.9,
+      "missing_fraction_of_file": 0.027
+    },
+    "RT": {
+      "first_valid_depth": 7.1,
+      "last_valid_depth": 413.1,
+      "missing_fraction_of_file": 0.32
+    },
+    "DT": {
+      "first_valid_depth": 2.3,
+      "last_valid_depth": 411.3,
+      "missing_fraction_of_file": 0.315
+    },
+    "CALI": {
+      "first_valid_depth": 0.2,
+      "last_valid_depth": 596.8,
+      "missing_fraction_of_file": 0.0
+    },
+    "DRHO": {
+      "first_valid_depth": 0.2,
+      "last_valid_depth": 594.4,
+      "missing_fraction_of_file": 0.004
+    }
+  },
+  "processing_interval": {
+    "top": 14.1,
+    "base": 413.1,
+    "n_samples": 3991,
+    "step": 0.1,
+    "reason": "first to last depth where ['GR', 'RHOB', 'RT'] all have data"
+  },
+  "missing_data": {
+    "GR": {
+      "missing_samples": 0,
+      "missing_fraction": 0.0,
+      "n_gaps": 0,
+      "longest_gap": null
+    },
+    "RHOB": {
+      "missing_samples": 0,
+      "missing_fraction": 0.0,
+      "n_gaps": 0,
+      "longest_gap": null
+    },
+    "NPHI": {
+      "missing_samples": 0,
+      "missing_fraction": 0.0,
+      "n_gaps": 0,
+      "longest_gap": null
+    },
+    "RT": {
+      "missing_samples": 0,
+      "missing_fraction": 0.0,
+      "n_gaps": 0,
+      "longest_gap": null
+    },
+    "DT": {
+      "missing_samples": 18,
+      "missing_fraction": 0.005,
+      "n_gaps": 1,
+      "longest_gap": [
+        411.4,
+        413.1
+      ]
+    },
+    "CALI": {
+      "missing_samples": 0,
+      "missing_fraction": 0.0,
+      "n_gaps": 0,
+      "longest_gap": null
+    },
+    "DRHO": {
+      "missing_samples": 0,
+      "missing_fraction": 0.0,
+      "n_gaps": 0,
+      "longest_gap": null
+    }
+  },
+  "out_of_range": {
+    "GR": {
+      "samples": 0,
+      "limits": [
+        0.0,
+        1000.0
+      ],
+      "intervals": []
+    },
+    "RHOB": {
+      "samples": 0,
+      "limits": [
+        1.2,
+        3.2
+      ],
+      "intervals": []
+    },
+    "NPHI": {
+      "samples": 0,
+      "limits": [
+        -0.15,
+        1.0
+      ],
+      "intervals": []
+    },
+    "RT": {
+      "samples": 0,
+      "limits": [
+        0.01,
+        100000.0
+      ],
+      "intervals": []
+    },
+    "DT": {
+      "samples": 0,
+      "limits": [
+        40.0,
+        240.0
+      ],
+      "intervals": []
+    },
+    "CALI": {
+      "samples": 0,
+      "limits": [
+        2.0,
+        40.0
+      ],
+      "intervals": []
+    }
+  },
+  "flatline": {
+    "GR": {
+      "samples": 0,
+      "intervals": []
+    },
+    "RHOB": {
+      "samples": 0,
+      "intervals": []
+    },
+    "NPHI": {
+      "samples": 0,
+      "intervals": []
+    },
+    "RT": {
+      "samples": 0,
+      "intervals": []
+    },
+    "DT": {
+      "samples": 84,
+      "intervals": [
+        [
+          191.2,
+          193.7
+        ],
+        [
+          233.6,
+          235.8
+        ],
+        [
+          407.9,
+          411.3
+        ]
+      ]
+    }
+  },
+  "washout": {
+    "assessed": true,
+    "bit_size_source": "config qc.bit_size_in = 5.5 in (ASSUMED, no bit-size curve)",
+    "threshold_in": 1.5,
+    "samples": 217,
+    "fraction": 0.054,
+    "max_overgauge_in": 6.33,
+    "not_assessed_samples": 0,
+    "intervals_top_base_maxovergauge": [
+      [
+        378.9,
+        380.5,
+        3.17
+      ],
+      [
+        381.2,
+        383.2,
+        6.06
+      ],
+      [
+        384.5,
+        386.0,
+        3.73
+      ],
+      [
+        389.8,
+        391.3,
+        3.39
+      ],
+      [
+        392.1,
+        397.5,
+        5.03
+      ],
+      [
+        399.0,
+        399.7,
+        3.46
+      ],
+      [
+        400.9,
+        405.7,
+        6.33
+      ],
+      [
+        410.1,
+        410.7,
+        2.88
+      ]
+    ]
+  },
+  "undergauge_caliper": {
+    "threshold_in": 0.5,
+    "samples": 0,
+    "intervals": [],
+    "note": "caliper reads smaller than the bit: suspect caliper, hole condition unknown there"
+  },
+  "density_correction": {
+    "threshold_gcc": 0.15,
+    "samples": 385,
+    "intervals": [
+      [
+        38.0,
+        40.9
+      ],
+      [
+        58.5,
+        62.7
+      ],
+      [
+        64.5,
+        66.3
+      ],
+      [
+        72.4,
+        73.4
+      ],
+      [
+        120.8,
+        122.1
+      ],
+      [
+        141.5,
+        143.6
+      ],
+      [
+        155.9,
+        157.2
+      ],
+      [
+        321.1,
+        322.2
+      ]
+    ]
+  },
+  "spikes": {
+    "GR": {
+      "samples": 0,
+      "first_depths": []
+    },
+    "RHOB": {
+      "samples": 0,
+      "first_depths": []
+    },
+    "NPHI": {
+      "samples": 0,
+      "first_depths": []
+    },
+    "RT": {
+      "samples": 0,
+      "first_depths": []
+    },
+    "DT": {
+      "samples": 0,
+      "first_depths": []
+    }
+  },
+  "spike_action": "set_nan",
+  "badhole_action": "null_density_neutron",
+  "samples_set_to_nan": {
+    "RHOB": {
+      "badhole": 602
+    },
+    "NPHI": {
+      "badhole": 602
+    },
+    "DT": {
+      "flatline": 84
+    }
+  }
+}
