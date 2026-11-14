@@ -28,7 +28,9 @@ def _facies_info(model_path, metrics_path, cfg) -> dict:
         info.update({
             "classes": m["classes"],
             "features": m["features"],
-            "split": "well-based: whole wells held out for testing",
+            "split": ("leave-one-well-out: each well held out once; the saved model is trained on all wells"
+                      if m["split"].get("evaluation") == "leave_one_well_out"
+                      else "well-based: whole wells held out for testing"),
             "n_train_wells": m["split"]["n_train_wells"],
             "n_test_wells": m["split"]["n_test_wells"],
             "test_accuracy": m["test"]["accuracy"],

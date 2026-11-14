@@ -45,7 +45,7 @@ shale_log_assistant/
 │   ├── chat.py
 │   ├── verify_report.py
 │   └── csv_to_las.py
-├── tests/                       23 tests, formulas checked against hand calculations
+├── tests/                       58 tests, formulas checked against hand calculations
 ├── models/                      facies metrics + confusion matrix from the example training run
 └── outputs/example/             example run on Volve well 15/9-19 SR
 ```
@@ -56,7 +56,7 @@ Python 3.10 or newer.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests -q                        # 23 tests should pass
+python -m pytest tests -q                        # 58 tests should pass
 
 python scripts/download_example_data.py          # LAS (2.7 MB) + FORCE 2020 wells (92 MB)
 python scripts/prepare_force_training.py         # builds data/force/training_table.csv
@@ -79,6 +79,45 @@ Test a tool without the LLM (no API key needed):
 ```bash
 python scripts/chat.py --no-llm '{"tool": "compute_sw", "input": {"zone": "Z9", "rw": 0.05}}'
 ```
+
+## Training the facies classifier on your own labelled wells
+
+```bash
+python scripts/train_facies.py --table my_labelled_wells.csv --out models --compare-random-split
+```
+
+The table is a CSV (comma or semicolon separated, column names in any case) with one row per depth sample:
+
+| Column | Content | Unit |
+|---|---|---|
+| `WELL` | well name; this is what the split is made on | text |
+| `DEPTH` | measured depth (not used as a feature) | as in your logs |
+| `GR` | gamma ray | API |
+| `RHOB` | bulk density | g/cc |
+| `NPHI` | neutron porosity | v/v (fraction, not percent) |
+| `RT` | deep resistivity | ohm.m |
+| `DT` | compressional sonic | us/ft |
+| `FACIES` | your label (core / XRD lithofacies), any text | - |
+
+```
+WELL,DEPTH,GR,RHOB,NPHI,RT,DT,FACIES
+A-1,2500.0,142.3,2.48,0.27,8.4,96.1,Siliceous mudstone
+A-1,2500.5,155.0,2.44,0.29,11.2,99.8,Organic-rich mudstone
+B-2,2710.0,61.7,2.63,0.08,45.0,62.3,Carbonate
+```
+
+- Units must be the ones above, because the pipeline predicts on curves in those units. A table that is
+  clearly in kg/m3, percent or us/m is refused with a message; nothing is converted silently.
+- Rows with an empty curve, an empty label or RT <= 0 are dropped and counted in the output. Extra columns are ignored.
+- Classes with fewer than `facies.min_class_samples` samples (config, 100 by default) are dropped: lower it for a small table.
+- **5 or more wells:** whole wells are held out (`facies.test_fraction` of the wells, or the wells you list in
+  `facies.test_wells`), with well-grouped cross-validation on the training wells.
+- **2 to 4 wells:** the script falls back to **leave-one-well-out** and says so: each well is held out once and
+  predicted by a model trained on the others; the scores and confusion matrix pool those predictions and a
+  per-well table is printed. The saved model is then trained on all wells, so the scores describe models
+  trained on one well fewer.
+- **1 well:** refused. The only possible test would be a random row split, which leaks.
+- A class that occurs in only one well is reported: it cannot be predicted when that well is held out.
 
 ## Formulas (units: GR API, RHOB g/cc, NPHI v/v, RT/Rw/Rsh ohm.m, DT us/ft, TOC wt%)
 
