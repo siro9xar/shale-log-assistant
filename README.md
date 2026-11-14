@@ -33,7 +33,8 @@ shale_log_assistant/
 │   ├── llm.py                   Anthropic API: report writer and chat loop
 │   ├── verify.py                number check, 0-1 range check, low-confidence check
 │   ├── suggest.py               Rw from Rwa, Passey baseline candidates, matrix density (suggestions only)
-│   └── core_calibration.py      core vs log: bias, RMSE, R2; LOM / baseline change that removes TOC bias
+│   ├── core_calibration.py      core vs log: bias, RMSE, R2; LOM / baseline change that removes TOC bias
+│   └── export.py                HTML + PDF export, verification status at the top
 ├── scripts/
 │   ├── download_example_data.py
 │   ├── prepare_force_training.py
@@ -44,8 +45,9 @@ shale_log_assistant/
 │   ├── generate_report.py
 │   ├── chat.py
 │   ├── verify_report.py
-│   └── csv_to_las.py
-├── tests/                       58 tests, formulas checked against hand calculations
+│   ├── csv_to_las.py
+│   └── export_report.py
+├── tests/                       66 tests, formulas checked against hand calculations
 ├── models/                      facies metrics + confusion matrix from the example training run
 └── outputs/example/             example run on Volve well 15/9-19 SR
 ```
@@ -56,7 +58,7 @@ Python 3.10 or newer.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests -q                        # 58 tests should pass
+python -m pytest tests -q                        # 66 tests should pass
 
 python scripts/download_example_data.py          # LAS (2.7 MB) + FORCE 2020 wells (92 MB)
 python scripts/prepare_force_training.py         # builds data/force/training_table.csv
@@ -69,6 +71,7 @@ export ANTHROPIC_API_KEY=sk-ant-...              # PowerShell: $env:ANTHROPIC_AP
 python scripts/generate_report.py                # LLM report + automatic verification
 python scripts/verify_report.py                  # re-run the verification any time
 python scripts/chat.py                           # ask "what if Rw is 0.05 in Z9?"
+python scripts/export_report.py                  # one HTML (+ PDF): verification status at the top
 ```
 
 Your own well: `python scripts/run_pipeline.py --las my_well.las --out outputs/my_well`, then pass
