@@ -1,0 +1,38 @@
+Split: GroupShuffleSplit on WELL (test_fraction=0.25 of wells, random_state=42)
+  train: 26 wells, 183067 samples
+  test : 9 wells, 57515 samples  -> 16/10-5, 16/2-6, 16/4-1, 16/7-4, 25/11-19 S, 25/2-13 T4, 25/3-1, 25/5-1, 25/6-2
+  classes dropped (too few samples): ['Basement', 'Halite']
+
+HELD-OUT WELLS: accuracy 0.642, balanced accuracy 0.469, macro F1 0.336
+Well-grouped 5-fold CV on training wells: accuracy 0.639 +/- 0.019, macro F1 0.32 +/- 0.03
+Random ROW split (leaky, for comparison only): accuracy 0.77, macro F1 0.607
+
+Per class on held-out wells:
+  class              precision  recall     f1  support
+  Anhydrite              0.269   0.253  0.261      483
+  Chalk                  0.000   0.000  0.000        0
+  Coal                   0.171   0.874  0.287      215
+  Dolomite               0.009   0.008  0.008      255
+  Limestone              0.494   0.504  0.499     4198
+  Marl                   0.401   0.600  0.481     2111
+  Sandstone              0.585   0.531  0.557     9882
+  Sandstone/Shale        0.184   0.304  0.229     4176
+  Shale                  0.902   0.745  0.816    35405
+  Tuff                   0.151   0.397  0.219      790
+
+Confusion matrix (rows = true, columns = predicted):
+                 Anhydrite  Chalk  Coal  Dolomite  Limestone  Marl  Sandstone  Sandstone/Shale  Shale  Tuff
+Anhydrite              122      0     0         6          1     0        353                1      0     0
+Chalk                    0      0     0         0          0     0          0                0      0     0
+Coal                     0      0   188         0          0     2          7               12      6     0
+Dolomite                 7      1    27         2        122     3         65               27      1     0
+Limestone               31    909     6        38       2116   211        202              172    400   113
+Marl                     0     47     1        27        267  1266         96              165    161    81
+Sandstone              140     76    69        98       1206   481       5252             1090   1452    18
+Sandstone/Shale        117     45    55        14        308   146       1530             1269    671    21
+Shale                   36     20   732        46        258   971       1368             4060  26380  1534
+Tuff                     0     10    19         2          4    78        106               93    164   314
+
+Confidence check on held-out wells (threshold 0.6): accuracy 0.807 when confident, 0.428 when not (44% of samples are below the threshold)
+
+Saved to models/: facies_rf.joblib, facies_metrics.json, confusion_matrix.csv, confusion_matrix.png

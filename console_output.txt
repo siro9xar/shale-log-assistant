@@ -1,0 +1,126 @@
+==============================================================================
+QC REPORT  -  15/9-19 SR   (data/volve/15-9-19_SR_COMP.LAS)
+==============================================================================
+
+Curves found (file mnemonic [unit] -> standard name, conversion):
+  GR     [GAPI ] -> GR    [API]   conversion: none
+  CALI   [IN   ] -> CALI  [in]   conversion: none
+  DEN    [G/CC ] -> RHOB  [g/cc]   conversion: none
+  NEU    [%    ] -> NPHI  [v/v]   conversion: percent -> v/v (divided by 100)
+  RDEP   [OHMM ] -> RT    [ohm.m]   conversion: none
+  AC     [US/F ] -> DT    [us/ft]   conversion: none
+Curves NOT in file: CGR, BS, DRHO, PEF
+
+DEPTH (m): 29754 samples, 102.1568 - 4636.514, median step 0.1524
+  ok    monotonic, regular step, header matches data
+
+COVERAGE over the whole file:
+  GR    valid 102.16 - 4634.69 m   missing 5.5% of file
+  RHOB  valid 3550.21 - 4629.66 m   missing 76.2% of file
+  NPHI  valid 3550.21 - 4631.48 m   missing 76.2% of file
+  RT    valid 105.81 - 4636.51 m   missing 58.9% of file
+  DT    valid 3550.21 - 4617.92 m   missing 76.5% of file
+  CALI  valid 3550.21 - 4617.92 m   missing 76.5% of file
+
+PROCESSING INTERVAL: 3550.21 - 4629.66 m  (7084 samples; first to last depth where ['GR', 'RHOB', 'RT'] all have data)
+
+MISSING DATA inside the processing interval:
+  ok    GR         0 samples (0.0%) in 0 gap(s)
+  ok    RHOB       0 samples (0.0%) in 0 gap(s)
+  ok    NPHI       0 samples (0.0%) in 0 gap(s)
+  FLAG  RT        56 samples (0.8%) in 1 gap(s), longest gap 3559.66 - 3568.04 m
+  FLAG  DT        77 samples (1.1%) in 1 gap(s), longest gap 4618.07 - 4629.66 m
+  FLAG  CALI      77 samples (1.1%) in 1 gap(s), longest gap 4618.07 - 4629.66 m
+
+OUT OF PHYSICAL RANGE (set to NaN):
+  ok    GR         0 samples outside [0.0, 1000.0]
+  ok    RHOB       0 samples outside [1.2, 3.2]
+  FLAG  NPHI       4 samples outside [-0.15, 1.0]
+  ok    RT         0 samples outside [0.01, 100000.0]
+  FLAG  DT        15 samples outside [40.0, 240.0]
+  ok    CALI       0 samples outside [2.0, 40.0]
+
+FLATLINE / dead tool (set to NaN):
+  ok    GR         0 samples
+  ok    RHOB       0 samples
+  ok    NPHI       0 samples
+  ok    RT         0 samples
+  FLAG  DT        85 samples  at [[4605.12, 4617.92]]
+
+WASHOUT (caliper):
+  bit size: config qc.bit_size_in = 8.5 in (ASSUMED, no bit-size curve)
+  FLAG  1226 samples (17.3%) with CALI - bit > 1.5 in; max over-gauge 11.83 in
+        3567.73 - 3575.05 m   (max +5.1 in)
+        3579.77 - 3585.26 m   (max +3.19 in)
+        3595.01 - 3601.26 m   (max +11.83 in)
+        3603.09 - 3616.81 m   (max +5.82 in)
+        3825.59 - 3852.26 m   (max +2.5 in)
+        4053.58 - 4059.07 m   (max +1.6 in)
+        4065.17 - 4072.79 m   (max +1.6 in)
+        4340.86 - 4383.38 m   (max +3.4 in)
+  FLAG  77 samples have no caliper: hole condition unknown
+  FLAG  143 samples with caliper < bit size by > 0.5 in at [[3654.75, 3654.91], [4596.59, 4617.92]]: suspect caliper
+  action on bad hole: null_density_neutron
+
+SPIKES (Hampel filter; action: set_nan):
+  FLAG  GR        17 samples  first at [3603.85, 4132.53, 4132.68, 4150.51, 4163.46, 4163.62, 4187.24, 4187.39]
+  FLAG  RHOB      11 samples  first at [3567.58, 3601.57, 3804.11, 3804.26, 4389.93, 4390.08, 4424.07, 4424.22]
+  FLAG  NPHI      32 samples  first at [3561.33, 3561.64, 3615.74, 3659.02, 3661.76, 3668.93, 3669.08, 3691.48]
+  FLAG  RT         5 samples  first at [4132.22, 4187.24, 4187.39, 4323.79, 4395.57]
+  FLAG  DT        66 samples  first at [3572.15, 3603.85, 3615.59, 3661.15, 3666.79, 3700.78, 3706.57, 3709.77]
+
+SAMPLES SET TO NaN BY QC (curve: reason = count):
+  GR    spike = 17
+  RHOB  spike = 11, badhole = 1226
+  NPHI  out_of_range = 4, spike = 32, badhole = 1219
+  RT    spike = 5
+  DT    out_of_range = 15, flatline = 85, spike = 66
+==============================================================================
+
+PARAMETERS USED (auto-picked values marked *):
+    vsh.gr_curve = GR
+    vsh.larionov_variant = older
+    vsh.use_for_downstream = larionov
+  * vsh.gr_clean = 7.17
+  * vsh.gr_shale = 70.27
+    toc.method = sonic
+    toc.lom = 10.0
+    toc.min_vsh = 0.4
+    toc.baseline_interval = [4340.0, 4375.0]
+  * toc.rt_baseline = 1.137
+  * toc.dt_baseline = 80.31
+  * toc.rhob_baseline = 2.467
+  * toc.nphi_baseline = 0.265
+    porosity.rho_matrix = 2.65
+    porosity.rho_fluid = 1.0
+    porosity.nphi_matrix_offset = 0.0
+    porosity.fluid_type = liquid
+    porosity.phit_method = density
+    porosity.phie_method = density
+    porosity.phi_max = 0.45
+    porosity.kerogen = {'apply': True, 'rho_kerogen': 1.3, 'k_factor': 1.2, 'hi_kerogen': 0.65}
+  * porosity.rho_shale = 2.51
+  * porosity.nphi_shale = 0.157
+    sw.a = 1.0
+    sw.m = 2.0
+    sw.n = 2.0
+    sw.rw = 0.02
+    sw.archie_porosity = PHIT
+    sw.simandoux_porosity = PHIE
+    sw.phi_min = 0.01
+  * sw.rsh = 1.381
+
+ZONE SUMMARY (averages; * = low confidence)
+zone        top     base    thk   Vsh  PHIT  PHIE   SwA   SwS  TOC%  facies (conf)
+Z1*      3550.2   3566.8   16.6  0.29 0.298 0.274  0.48  0.49  0.00  Limestone (0.34)
+Z2*      3566.8   3677.3  110.5  0.54 0.210 0.171  0.80  0.84  1.63  Sandstone (0.70)
+Z3       3677.3   3821.5  144.2  0.28 0.279 0.256  0.79  0.82  0.22  Sandstone (0.88)
+Z4*      3821.5   4119.7  298.2  0.04 0.044 0.041  0.99  0.99  0.01  Limestone (0.67)
+Z5*      4119.7   4270.8  151.0  0.25 0.020 0.006  1.00  0.99  0.21  Limestone (0.58)
+Z6*      4270.8   4304.4   33.7  0.68 0.022 0.000  1.00  1.00  1.22  Limestone (0.43)
+Z7       4304.4   4310.4    5.9  0.99 0.129 0.056  0.64  0.53  4.55  Shale (0.90)
+Z8*      4310.4   4316.3    5.9  0.88 0.024 0.000  1.00  1.00  1.28  Shale (0.69)
+Z9*      4316.3   4341.8   25.4  0.26 0.212 0.194  0.20  0.17  0.66  Sandstone (0.52)
+Z10*     4341.8   4629.7  287.9  0.62 0.118 0.070  0.98  0.98  0.07  Sandstone (0.51)
+
+Saved to outputs/example/: qc_report.txt, qc_report.json, zone_summary.json, curves.csv, log_plot.png

@@ -1,0 +1,11 @@
+,pred: Anhydrite,pred: Chalk,pred: Coal,pred: Dolomite,pred: Limestone,pred: Marl,pred: Sandstone,pred: Sandstone/Shale,pred: Shale,pred: Tuff
+true: Anhydrite,122,0,0,6,1,0,353,1,0,0
+true: Chalk,0,0,0,0,0,0,0,0,0,0
+true: Coal,0,0,188,0,0,2,7,12,6,0
+true: Dolomite,7,1,27,2,122,3,65,27,1,0
+true: Limestone,31,909,6,38,2116,211,202,172,400,113
+true: Marl,0,47,1,27,267,1266,96,165,161,81
+true: Sandstone,140,76,69,98,1206,481,5252,1090,1452,18
+true: Sandstone/Shale,117,45,55,14,308,146,1530,1269,671,21
+true: Shale,36,20,732,46,258,971,1368,4060,26380,1534
+true: Tuff,0,10,19,2,4,78,106,93,164,314
