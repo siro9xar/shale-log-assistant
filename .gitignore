@@ -1,6 +1,24 @@
+# Python
 __pycache__/
 *.pyc
 .pytest_cache/
+.venv/
+venv/
+
+# Downloaded data (scripts/download_example_data.py fetches it again)
 data/
-models/facies_rf.joblib
+
+# Trained models and per-sample outputs (re-created by the scripts)
+models/*.joblib
 models/facies_metrics.json
+outputs/*/curves.csv
+outputs/*/calibration_report.json
+outputs/*/calibration_crossplot.png
+
+# API keys and other secrets: never commit them
+.env
+.env.*
+*.key
+*.pem
+secrets.*
+.anthropic*
