@@ -138,3 +138,15 @@ def test_gamma_ray_and_resistivity_units_are_checked():
     assert v.tolist() == x.tolist() and note == "none" and "not API" in warn
     assert convert_to_standard("RT", x, "OHMM")[2] is None and convert_to_standard("RT", x, "ohm.m")[2] is None
     assert "not ohm.m" in convert_to_standard("RT", x, "MMHO/M")[2]
+
+
+# ----------------------------------------------------------------------------- no machine paths in outputs
+def test_qc_report_does_not_store_absolute_paths(run_dir, tmp_path, monkeypatch):
+    from shale_assistant.qc import _display_path
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "d").mkdir()
+    (tmp_path / "d" / "w.las").write_text("")
+    assert _display_path(tmp_path / "d" / "w.las") == "d/w.las"                 # under the working dir
+    assert _display_path("/somewhere/else/private/w.las") == "w.las"             # elsewhere: file name only
+    rep = json.loads((run_dir / "qc_report.json").read_text())
+    assert not rep["file"].startswith("/") and ":\\" not in rep["file"]

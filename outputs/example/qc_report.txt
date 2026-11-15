@@ -1,5 +1,5 @@
 ==============================================================================
-QC REPORT  -  15/9-19 SR   (/home/user/shale-log-assistant/data/volve/15-9-19_SR_COMP.LAS)
+QC REPORT  -  15/9-19 SR   (data/volve/15-9-19_SR_COMP.LAS)
 ==============================================================================
 
 Curves found (file mnemonic [unit] -> standard name, conversion):

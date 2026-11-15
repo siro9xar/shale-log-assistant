@@ -1,6 +1,6 @@
 {
   "well": "15/9-19 SR",
-  "file": "/home/user/shale-log-assistant/data/volve/15-9-19_SR_COMP.LAS",
+  "file": "data/volve/15-9-19_SR_COMP.LAS",
   "depth_unit": "M",
   "header": {
     "STRT": 102.1568,

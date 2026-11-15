@@ -13,6 +13,8 @@ The report is returned as a dict (saved as JSON) and as text (printed).
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 from dataclasses import dataclass
 
 import numpy as np
@@ -151,11 +153,21 @@ def hampel_spikes(x: np.ndarray, window: int, nsigma: float, min_scale: float,
 
 
 # --------------------------------------------------------------------------- main
+def _display_path(path) -> str:
+    """Path relative to the working directory when the file is under it, else just the file name:
+    saved reports must not carry a user's home folder or machine layout."""
+    p = Path(path)
+    try:
+        return p.resolve().relative_to(Path.cwd().resolve()).as_posix()
+    except ValueError:
+        return p.name
+
+
 def run_qc(log: WellLog, cfg: dict) -> QCResult:
     qc = cfg["qc"]
     report: dict = {
         "well": log.name,
-        "file": log.path,
+        "file": _display_path(log.path),
         "depth_unit": log.depth_unit,
         "header": log.header,
         "curves_found": log.mapping,
