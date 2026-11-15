@@ -1,6 +1,45 @@
 # Shale Log Assistant
 
-An AI log-interpretation assistant for unconventional (shale) reservoirs.
+Python well-log interpretation with an LLM layer that is not allowed to calculate. In five lines:
+
+1. Reads a LAS file, prints a QC report first, then computes Vsh, TOC (Passey delta-log-R), porosity and Sw (Archie, Simandoux) in Python; every assumption is in `config.yaml`.
+2. A random-forest classifier predicts lithology per depth sample and is scored on whole held-out wells: accuracy 0.688 (balanced 0.436) on 9 FORCE 2020 wells, against 0.833 for a leaky random row split.
+3. Zones are picked automatically and summarised in one JSON file; an LLM (Anthropic API) writes the report or answers what-if questions by calling Python tools.
+4. A script checks the LLM text: every number must appear in the JSON or a tool result, Vsh and Sw must be within 0-1, and every low-confidence zone must be flagged.
+5. 81 automated tests (formulas against hand calculations, synthetic wells with known answers); the LLM layer is tested with a scripted client only, not yet against the live API.
+
+![Log plot of the example run](outputs/example/log_plot.png)
+
+*Example run on Volve 15/9-19 SR (3550-4630 m), a conventional North Sea well: inputs, QC (red = bad hole),
+Vsh, porosity, Sw, TOC, facies and 10 automatic zones (* = low confidence; 8 of 10 are). Not calibrated.*
+
+## Limits
+
+Read these before quoting any number from this repository.
+
+- **No calibration.** Rw, m, n, LOM, kerogen density, matrix density and the Passey baselines are assumed, not
+  measured. TOC and Sw are estimates until checked against core TOC, Ro/Tmax and a water sample.
+  `calibrate_with_core.py` and `suggest_parameters.py` have been tested on synthetic data only.
+- **Neither example is a producing shale reservoir.** Volve is a conventional North Sea field, used because it is
+  public and has a full log suite with an organic-rich shale interval. The second example (USGS GC-1, Eagle Ford
+  Group) is a shallow, thermally immature research well; its assumptions are marked in `config_shale.yaml`.
+- **The facies labels are lithology classes** from North Sea wells, not shale lithofacies from core or XRD. The
+  scores above are for 9 held-out North Sea wells; a different basin will score differently.
+- **The LLM report and chat have not been run against the live API** (no API key in the build environment). The
+  API calls, tool loop and verification were tested with a scripted fake client.
+- **The number check has known gaps.** It confirms that a number appears somewhere in the JSON or a tool result,
+  not that it belongs to the right zone and quantity; it ignores the sign, does not see numbers written as words,
+  accepts numbers the user typed, and cannot see arithmetic the LLM does before calling a tool.
+- **One Passey baseline per well** is too coarse: the baseline shifts with compaction and lithology. Sonic is not
+  rejected in washed-out hole, so washouts can show as TOC (Volve Z2: 1.63 wt%, most likely an artefact).
+- **Matrix density 2.65 g/cc is wrong in the Volve carbonate zones** (Z4-Z6). The "Sw above 1" flag catches it.
+- **Archie and Simandoux are conventional-reservoir models.** In shale they are used for lack of better;
+  results depend heavily on Rw and m.
+- **Two sets of example numbers.** The original `config.yaml` was missing from the upload and was reconstructed.
+  `outputs/example` and the scores above come from the reconstructed config; the "Example run" section further
+  down quotes the original run (facies accuracy 0.642, balanced 0.469).
+
+## How it works
 
 **Rule of the project: Python does every calculation. The LLM never calculates; it only
 interprets numbers that Python gives it, and a script checks that afterwards.**
@@ -47,7 +86,7 @@ shale_log_assistant/
 │   ├── verify_report.py
 │   ├── csv_to_las.py
 │   └── export_report.py
-├── tests/                       80 tests, formulas checked against hand calculations
+├── tests/                       81 tests, formulas checked against hand calculations
 ├── models/                      facies metrics + confusion matrix from the example training run
 └── outputs/example/             example run on Volve well 15/9-19 SR
 ```
@@ -58,7 +97,7 @@ Python 3.10 or newer.
 
 ```bash
 pip install -r requirements.txt
-python -m pytest tests -q                        # 80 tests should pass
+python -m pytest tests -q                        # 81 tests should pass
 
 python scripts/download_example_data.py          # LAS (2.7 MB) + FORCE 2020 wells (92 MB)
 python scripts/prepare_force_training.py         # builds data/force/training_table.csv
@@ -204,22 +243,6 @@ python scripts/run_pipeline.py --las data/usgs_gc1_west_woodway/GC-1_West_Woodwa
 
 Nothing in `outputs/gc1` is calibrated against core. Core geochemistry for this well exists
 (USGS data release doi:10.5066/P95QUX1H) and is the next step (`scripts/calibrate_with_core.py`).
-
-## Limits you should state when you present this
-
-- **Not a shale play.** Volve is a conventional North Sea field. It was used because it is public and has a
-  full log suite with an organic-rich shale interval. Run a real shale well before making claims about one.
-- **The facies labels are lithology classes**, not shale lithofacies from core or XRD. The training code is
-  the same; the labels need replacing for a real shale study.
-- **No calibration.** Rw, m, n, LOM, kerogen density, matrix density and the baselines are assumed, not
-  measured. TOC and Sw are estimates until checked against core TOC, Ro/Tmax and a water sample.
-- **One Passey baseline for 1080 m** is too coarse: the baseline shifts with compaction. The 1.63 wt% in Z2
-  (shallow, washed out, slow sonic) is most likely a baseline artefact, not kerogen.
-- **Matrix density 2.65 g/cc is wrong in the carbonate zones** (Z4-Z6). The "Sw above 1" flag catches it.
-- **Archie and Simandoux are conventional-reservoir models.** In shale they are used for lack of better;
-  results depend heavily on Rw and m.
-- **The LLM report and chat were not run against the live API when this was built** (no API key in the build
-  environment). The API calls, tool loop and verification were tested with a scripted fake client.
 
 ## Data sources and licences
 
